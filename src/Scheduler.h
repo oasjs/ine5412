@@ -1,8 +1,8 @@
-#include <list>
-#include "Process.h"
-
 #ifndef SCHEDULER_H
 #define SCHEDULER_H
+
+#include <list>
+#include "Process.h"
 
 /**
  * @class Scheduler
