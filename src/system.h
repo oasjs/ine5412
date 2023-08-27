@@ -1,9 +1,9 @@
 #ifndef SYSTEM_H
 #define SYSTEM_H
 
-#include "Kernel.h"
-#include "CPU.h"
-#include "Memory.h"
+#include "kernel.h"
+#include "cpu.h"
+#include "memory.h"
 
 /**
  * @class System

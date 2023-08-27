@@ -2,9 +2,9 @@
 #define KERNEL_H
 
 #include <list>
-#include "Scheduler.h"
-#include "CPU.h"
-#include "ReadFile.h"
+#include "scheduler.h"
+#include "cpu.h"
+#include "read_file.h"
 
 /**
  * @class Kernel

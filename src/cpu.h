@@ -2,7 +2,7 @@
 #define CPU_H
 
 #include <list>
-#include "Memory.h"
+#include "memory.h"
 
 /**
  * @class CPU
