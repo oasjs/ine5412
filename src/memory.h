@@ -1,8 +1,7 @@
 #ifndef MEMORY_H
 #define MEMORY_H
 
-#include <list>
-
+#include <unordered_map>
 
 /**
  * @class Memory
@@ -15,13 +14,21 @@ public:
 
     ~Memory() {}
 
-    void saveContext() {}
+    void save_context(int pid, Context context) {
+        contextMap[pid] = context;
+    }
 
-    void loadContext() {}
+    // Returns the context of a process given its pid if it exists. Otherwise,
+    // returns an empty context.
+    Context load_context(int pid) {
+        if (contextMap.find(pid) != contextMap.end())
+            return contextMap[pid];
+        else
+            return Context();
+    }
 
 private:
-    std::list<int> contextMap;  // Check the type of the list
-
+    std::unordered_map<int, Context> contextMap;
 };
 
 #endif // MEMORY_H
