@@ -18,6 +18,19 @@ public:
 		os << "Creation time = " << p.creation_time << " duration = " << p.duration << " priority = " << p.priority << endl;
 		return os;
 	}
+
+    int get_creation_time() {
+        return creation_time;
+    }
+
+    int get_duration() {
+        return duration;
+    }
+
+    int get_priority() {
+        return priority;
+    }
+
 	
 private:	
 	int creation_time;
@@ -30,7 +43,7 @@ class File
 
 public:
 	File() {
-		myfile.open("entrada.txt");
+		myfile.open("../entrada.txt");
 		if (!myfile.is_open()) {
 			cout << "Erro ao abrir o arquivo!\n";
 		}
@@ -61,6 +74,10 @@ public:
 		}
 	}
 
+    vector<ProcessParams *> get_processes_params() {
+        return processes;
+    }
+
 	~File() {
 		for(int i = 0; i < processes.size() ; i++) {
 			ProcessParams *p = processes[i];
@@ -72,11 +89,3 @@ private:
 	ifstream myfile; 
 	vector<ProcessParams *> processes;
 };
-
-// int main()
-// {
-// 	File f;
-// 	f.read_file();
-// 	f.print_processes_params();
-// }
-
