@@ -2,7 +2,7 @@
 #define SCHEDULER_H
 
 #include <list>
-#include "Process.h"
+#include "process.h"
 
 /**
  * @class Scheduler
