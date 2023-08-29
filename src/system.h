@@ -16,11 +16,13 @@ public:
 	System() {}
 
 	~System() {}
+
+    void start() {
+        kernel.start();
+    }
 	
 private:	
 	Kernel kernel;
-	CPU cpu; //seconds
-	Memory memory;
 };
 
 #endif // SYSTEM_H
