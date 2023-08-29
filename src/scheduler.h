@@ -18,7 +18,7 @@ public:
 
     virtual ~Scheduler() {}
 
-    void run() {}
+    bool run() {}
 
 protected:
     std::list<Process> processList;   // A List of Processes
