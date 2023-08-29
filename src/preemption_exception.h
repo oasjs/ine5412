@@ -9,18 +9,25 @@
  * @brief Custom exception to treat the preemptions.
  *
  * This exception will be thrown when a process is
- * preempted
+ * preempted.
  *
  */
 class PreemptionException : public std::exception {
 public:
-    PreemptionException(const std::string& message);
+    PreemptionException(const int scheduled_pid) noexcept;
     const char* what() const noexcept override;
 
+    int get_preempted_pid() const noexcept {
+        return preempted_pid;
+    }
+
+    int get_scheduled_pid() const noexcept {
+        return scheduled_pid;
+    }
+
 private:
-    std::string msg;
-    int blockedPid;
-    int startingPid;
+    int preempted_pid;
+    int scheduled_pid;
 };
 
 #endif // PREEMPRION_EXCEPTION_H
