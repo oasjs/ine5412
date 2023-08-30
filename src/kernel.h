@@ -1,10 +1,8 @@
 #ifndef KERNEL_H
 #define KERNEL_H
 
-#include <list>
 #include "scheduler.h"
 #include "cpu.h"
-#include "read_file.h"
 #include "process.h"
 #include "preemption_exception.h"
 
@@ -16,12 +14,17 @@
  */
 class Kernel {
 public:
-    Kernel() {}
+    Kernel() : cpu() {
+        processes_params = vector<ProcessParams *>();
+    }
+
+    explicit Kernel(vector<ProcessParams *> processes_params_) : cpu(),
+                                     processes_params(processes_params) {}
 
     ~Kernel() {}
 
-    void start() {
-        read_file();
+    void start(int scheduler_type) {
+        scheduler = SchedulerFactory().create_scheduler(scheduler_type);
         start_scheduler();
     }
 
@@ -31,11 +34,7 @@ private:
     std::vector<ProcessParams *> processes_params;
 
     // Reads standard file and sets a vector of processes params.
-    void read_file() {
-        File f;
-        f.read_file();
-        processes_params = f.get_processes_params();
-    }
+
 
     // For each second of the system running, feeds the scheduler with the
     // processes that are ready to enter scheduling.
@@ -72,7 +71,7 @@ private:
         }
     }
 
-    // Returns a list of processes that were required to be created at the
+    // Returns a vector of processes that were required to be created at the
     // current time.
     vector<Process> create_processes(int current_time, int process_counter) {
         vector<Process> processes;
@@ -87,6 +86,37 @@ private:
             }
         }
         return processes;
+    }
+};
+
+class SchedulerFactory {
+public:
+    SchedulerFactory() {}
+
+    ~SchedulerFactory() {}
+
+    Scheduler create_scheduler(int scheduler_type) {
+        switch (scheduler_type)
+        {
+        case FCFS:
+            return FCFScheduler();
+            break;
+        case SJF:
+            return SJFScheduler();
+            break;
+        case PNP:
+            return PNPScheduler();
+            break;
+        case PP:
+            return PPScheduler();
+            break;
+        case RR:
+            return RRNPScheduler();
+            break;
+        default:
+            return FCFScheduler();
+            break;
+        }
     }
 };
 
