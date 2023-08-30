@@ -42,8 +42,8 @@ class File
 {
 
 public:
-	File() {
-		myfile.open("../entrada.txt");
+	File(char* file_name) {
+		myfile.open(file_name);
 		if (!myfile.is_open()) {
 			cout << "Erro ao abrir o arquivo!\n";
 		}
