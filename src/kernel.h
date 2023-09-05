@@ -4,7 +4,6 @@
 #include "scheduler.h"
 #include "cpu.h"
 #include "process.h"
-#include "preemption_exception.h"
 
 /**
  * @class Kernel
