@@ -3,6 +3,7 @@
 
 #include <list>
 #include "process.h"
+#include "preemption_exception.h"
 
 /**
  * @class Scheduler
@@ -18,10 +19,17 @@ public:
 
     virtual ~Scheduler() {}
 
-    bool run() {}
+    virtual bool run() = 0;
 
-protected:
-    std::list<Process> processList;   // A List of Processes
+    void feed(vector<Process> new_processes) {
+        for (int i = 0; i < new_processes.size(); i++) {
+            process_list.push_back(new_processes[i]);
+        }
+    }
+
+private:
+    std::list<Process> process_list;   // A List of Processes
+    Process current_process;
 
     /**
      * The function that is going to print the Schedule
@@ -47,6 +55,16 @@ public:
 
     ~FCFScheduler() {}
 
+    bool run() override {
+        if (process_list.empty() && current_process.is_done()) {
+            return false;
+        }
+        if (!current_process || current_process.is_done()) {
+            current_process = process_list.pop_front();
+        }  
+        current_process.run();
+        return true;
+    }
 };
 
 /**
