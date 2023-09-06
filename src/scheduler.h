@@ -21,11 +21,7 @@ public:
 
     virtual bool run() = 0;
 
-    void feed(vector<Process> new_processes) {
-        for (int i = 0; i < new_processes.size(); i++) {
-            process_list.push_back(new_processes[i]);
-        }
-    }
+    virtual void feed() = 0;
 
 private:
     std::list<Process> process_list;   // A List of Processes
@@ -54,6 +50,12 @@ public:
     FCFScheduler() {}
 
     ~FCFScheduler() {}
+
+    void feed(vector<Process> new_processes) {
+        for (int i = 0; i < new_processes.size(); i++) {
+            process_list.push_back(new_processes[i]);
+        }
+    }
 
     bool run() override {
         if (process_list.empty() && current_process.is_done()) {
@@ -166,7 +168,7 @@ public:
 
         // For the processes that have
         // not been inserted before
-        // They are now insert in the 
+        // They are now insert in the
         // end of the vector
         if (!new_processes.empy()) {
             for (Process p : new_processes) {
