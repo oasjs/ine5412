@@ -61,7 +61,7 @@ public:
         }
         if (!current_process || current_process.is_done()) {
             current_process = process_list.pop_front();
-        }  
+        }
         current_process.run();
         return true;
     }
@@ -81,6 +81,52 @@ public:
 
     ~SJFScheduler() {}
 
+    void feed(vector<Process> new_processes) {
+        // List of new processes is sorted, from the
+        // element with the lowest duration, to the
+        // highest duration
+        std::sort(new_processes.begin(), new_processes.end(), compareByDuration);
+
+        // Iterates the process_list
+        // Inserts the new processes in
+        // order, as it iterates
+        for (int i = 0; i < process_list.size(); i++) {
+            if (new_processes.empty()) {
+                break;
+            }
+
+            if (compareByDuration(new_processes[0], process_list[i])) {
+                process_list.insert(i, new_processes.pop_front());
+            }
+        }
+
+        // For the processes that have
+        // not been inserted before
+        // They are now insert in the 
+        // end of the vector
+        if (!new_processes.empy()) {
+            for (Process p : new_processes) {
+                process_list.push_back(new_processes.pop_front())
+            }
+        }
+
+    }
+
+    bool run() override {
+        if (process_list.empty() && current_process.is_done()) {
+            return false;
+        }
+        if (!current_process || current_process.is_done()) {
+            current_process = process_list.pop_front();
+        }
+        current_process.run();
+        return true;
+    }
+
+private:
+    bool compareByDuration(const Process& a, const Process& b) {
+        return a.getDuration() < b.getDuration();
+    }
 };
 
 // Specialization PNPScheduler
