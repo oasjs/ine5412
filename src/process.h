@@ -35,6 +35,10 @@ public:
         return totalExecutionTime >= duration;
     }
 
+    int getDuration() {
+        return duration;
+    }
+
 protected:
     pid pid;
     startTime startTime;
