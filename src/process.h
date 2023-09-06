@@ -39,6 +39,10 @@ public:
         return duration;
     }
 
+    int getStaticPriority() {
+        return staticPriority;
+    }
+
 protected:
     pid pid;
     startTime startTime;
