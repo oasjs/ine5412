@@ -1,7 +1,8 @@
 #ifndef SCHEDULER_H
 #define SCHEDULER_H
 
-#include <list>
+#include <queue>
+#include <iostream>
 #include "process.h"
 
 /**
@@ -14,14 +15,22 @@
  */
 class Scheduler {
 public:
-    Scheduler() {}
+    Scheduler() {
+        current_process = Process();
+    }
 
     virtual ~Scheduler() {}
 
-    bool run() {}
+    virtual bool run() = 0;
+
+    virtual void feed(std::vector<Process> new_processes) = 0;
+
+    bool triggers_preemption() {
+        return false;
+    }
 
 protected:
-    std::list<Process> processList;   // A List of Processes
+    Process current_process;
 
     /**
      * The function that is going to print the Schedule
@@ -47,6 +56,27 @@ public:
 
     ~FCFScheduler() {}
 
+    bool run() override {
+        if (process_queue.empty() && current_process.is_done()) {
+            return false;
+        }
+        if (!current_process.get_duration() || current_process.is_done()) {
+            current_process = process_queue.front();
+            process_queue.pop();
+        }
+        current_process.run();
+        return true;
+    }
+
+    void feed(std::vector<Process> new_processes) override {
+        for (auto process : new_processes) {
+            process_queue.push(process);
+        }
+    }
+
+private:
+    std::queue<Process> process_queue;
+
 };
 
 /**
@@ -62,6 +92,34 @@ public:
     SJFScheduler() {}
 
     ~SJFScheduler() {}
+
+    bool run() override {
+        if (process_queue.empty() && current_process.is_done()) {
+            return false;
+        }
+        if (!current_process.get_duration() || current_process.is_done()) {
+            current_process = process_queue.top();
+            process_queue.pop();
+        }
+        current_process.run();
+        return true;
+    }
+
+    void feed(std::vector<Process> new_processes) override {
+        for (auto process : new_processes) {
+            process_queue.push(process);
+        }
+    }
+
+private:
+    struct CompareProcess {
+        bool operator()(Process const& p1, Process const& p2) {
+            return p1.get_duration() > p2.get_duration();
+        }
+    };
+    std::priority_queue<Process, std::vector<Process>, CompareProcess> process_queue;
+
+
 
 };
 
