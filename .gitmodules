@@ -1,0 +1,3 @@
+[submodule "NamedType"]
+	path = NamedType
+	url = git@github.com:joboccara/NamedType.git

@@ -5,6 +5,7 @@
 #include "scheduler.h"
 #include "cpu.h"
 #include "process.h"
+#include "process.h"
 #include "read_file.h"
 
 /**

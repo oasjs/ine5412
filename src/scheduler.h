@@ -4,6 +4,7 @@
 #include <queue>
 #include <iostream>
 #include "process.h"
+#include "preemption_exception.h"
 
 /**
  * @class Scheduler
@@ -137,6 +138,33 @@ public:
     PNPScheduler() {}
 
     ~PNPScheduler() {}
+
+
+    void feed(std::vector<Process> new_processes) override {
+        for (auto process : new_processes) {
+            process_queue.push(process);
+        }
+    }
+
+    bool run() override {
+        if (process_queue.empty() && current_process.is_done()) {
+            return false;
+        }
+        if (!current_process.get_duration() || current_process.is_done()) {
+            current_process = process_queue.top();
+            process_queue.pop();
+        }
+        current_process.run();
+        return true;
+    }
+
+private:
+    struct CompareProcess {
+        bool operator()(Process const& p1, Process const& p2) {
+            return p1.get_priority() > p2.get_priority();
+        }
+    };
+    std::priority_queue<Process, std::vector<Process>, CompareProcess> process_queue;
 
 };
 
