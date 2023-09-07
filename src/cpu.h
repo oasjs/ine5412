@@ -1,7 +1,7 @@
 #ifndef CPU_H
 #define CPU_H
 
-#include <list>
+#include <vector>
 #include <random>
 #include "context.h"
 #include "memory.h"
@@ -14,7 +14,7 @@
 class CPU {
 public:
     CPU() {
-        registers = vector<int>(6);
+        registers = std::vector<int>(6);
         sp = 0;
         pc = 0;
         st = 0;
@@ -51,7 +51,7 @@ public:
 
 private:
     Memory memory;
-    vector<int> registers;
+    std::vector<int> registers;
     int sp; // Stack Pointer
     int pc; // Program Counter
     int st; // Status

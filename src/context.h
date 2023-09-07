@@ -1,7 +1,7 @@
 #ifndef CONTEXT_H
 #define CONTEXT_H
 
-#include <list>
+#include <vector>
 
 /**
  * @class Context
@@ -12,13 +12,13 @@ class Context {
 public:
 
     Context() {
-        registers = vector<int>(6);
+        registers = std::vector<int>(6);
         sp = 0;
         pc = 0;
         st = 0;
     }
 
-    Context(vector<int> registers_, int sp_, int pc_, int st_) {
+    Context(std::vector<int> registers_, int sp_, int pc_, int st_) {
         registers = registers_;
         sp = sp_;
         pc = pc_;
@@ -27,7 +27,7 @@ public:
 
     ~Context() {}
 
-    vector<int> get_registers() {
+    std::vector<int> get_registers() {
         return registers;
     }
 
@@ -44,7 +44,7 @@ public:
     }
 
 private:
-    vector<int> registers;
+    std::vector<int> registers;
     int sp; // Stack Pointer
     int pc; // Program Counter
     int st; // Status
