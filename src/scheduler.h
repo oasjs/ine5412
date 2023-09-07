@@ -30,16 +30,16 @@ public:
         return false;
     }
 
-protected:
-    Process current_process;
-
     /**
      * The function that is going to print the Schedule
      * 
      */
-    void printSchedule() {
-        std::cout << "Generic: " << std::endl;  // TODO
+    void printSchedule(unsigned int time) {
+        std::cout << time << " " << current_process.getStateMnemonic() << std::endl;  // TODO
     }
+
+protected:
+    Process current_process;
 };
 
 /**
@@ -53,11 +53,17 @@ protected:
  */
 class FCFScheduler : public Scheduler {
 public:
-    FCFScheduler() {}
+    FCFScheduler() {
+        std::cout << "tempo P1 P2 P3 P4" << std::endl;
+    }
 
     ~FCFScheduler() {}
 
     bool run() override {
+        if (current_process.is_done()) {
+            current_process.setState(DONE);
+        }
+
         if (process_queue.empty() && current_process.is_done()) {
             return false;
         }
@@ -65,14 +71,20 @@ public:
             current_process = process_queue.front();
             process_queue.pop();
         }
+        current_process.setState(RUNNING); // Set process state to running
         current_process.run();
         return true;
     }
 
     void feed(std::vector<Process> new_processes) override {
         for (auto process : new_processes) {
+            process.setState(READY);    // Set process state to ready
             process_queue.push(process);
         }
+    }
+
+    void printSchedule(unsigned int time) {
+        std::cout << time << " " << current_process.getStateMnemonic() << std::endl;  // TODO
     }
 
 private:

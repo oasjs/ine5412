@@ -125,6 +125,7 @@ void Kernel::start_scheduler() {
         try
         {
             running = scheduler->run();
+            scheduler->printSchedule(time);
             // Only changes the state of the cpu if the scheduler has not thrown
             // a PreemptionException.
             cpu.change_state();

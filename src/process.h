@@ -1,6 +1,12 @@
 #ifndef PROCESS_H
 #define PROCESS_H
 
+enum States {
+    NEW,
+    READY,
+    RUNNING,
+    DONE
+};
 
 /**
  * @class Process
@@ -14,6 +20,7 @@ public:
         duration = 0;
         priority = 0;
         total_execution_time = 0;
+        state = 0;
     }
 
     Process(unsigned int pid_, unsigned int duration_, unsigned int priority_) {
@@ -21,6 +28,7 @@ public:
         duration = duration_;
         priority = priority_;
         total_execution_time = 0;
+        state = 0;
     }
 
     ~Process() {}
@@ -30,10 +38,28 @@ public:
      *  true if the process has finished its execution. Otherwise returns false.
     */
     void run() {
-        total_execution_time++;}
+        total_execution_time++;
+    }
 
     bool is_done() {
-        return total_execution_time >= duration;}
+        return total_execution_time >= duration;
+    }
+
+    void setState(unsigned int s) {
+        if (s == READY || s == RUNNING || s == DONE) {
+            state = s;
+        }
+    } 
+
+    std::string getStateMnemonic() {
+        if (state == READY) {
+            return "--";
+        } else if (state == RUNNING) {
+            return "##";
+        } else {
+            return "  ";
+        }
+    }
 
     /**
      * @brief Returns the process ID.
@@ -60,6 +86,7 @@ protected:
     unsigned int    duration;
     unsigned int    priority;
     unsigned int    total_execution_time;
+    unsigned int    state;
 };
 
 #endif // PROCESS_H
