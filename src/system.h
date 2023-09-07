@@ -2,7 +2,7 @@
 #define SYSTEM_H
 
 #include "kernel.h"
-#include "read_file.h"
+#include <vector>
 
 /**
  * @class System
@@ -12,33 +12,23 @@
 class System
 {
 public:
-	System(char* file_name_) {
-        File f(file_name_);
-        f.read_file();
-        kernel = Kernel(f.get_processes_params());
-    }
+	System(char* file_name) : file(file_name), kernel() {}
 
 	~System() {}
 
     void start(int scheduler_type) {
+        file.read_file();
         if (scheduler_type)
-            kernel.start(scheduler_type);
+            kernel.start(scheduler_type, file.get_processes_params());
         else
             for (int i = FCFS; i <= RR; i++)
-                kernel.start(i);
+                kernel.start(i, file.get_processes_params());
     }
-	
-private:	
+
+private:
 	Kernel kernel;
+    File file;
 };
 
-
-enum SchedulerType {
-    FCFS = 1,
-    SJF,
-    PNP,
-    PP,
-    RR
-};
 
 #endif // SYSTEM_H
