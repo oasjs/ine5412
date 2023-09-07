@@ -19,20 +19,20 @@ public:
 		return os;
 	}
 
-    int get_creation_time() {
+    int get_creation_time() const {
         return creation_time;
     }
 
-    int get_duration() {
+    int get_duration() const {
         return duration;
     }
 
-    int get_priority() {
+    int get_priority() const {
         return priority;
     }
 
-	
-private:	
+
+private:
 	int creation_time;
 	int duration; //seconds
 	int priority;
@@ -42,8 +42,8 @@ class File
 {
 
 public:
-	File() {
-		myfile.open("../entrada.txt");
+	File(char* file_name) {
+		myfile.open(file_name);
 		if (!myfile.is_open()) {
 			cout << "Erro ao abrir o arquivo!\n";
 		}
