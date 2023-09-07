@@ -1,12 +1,11 @@
 #ifndef KERNEL_H
 #define KERNEL_H
 
-#include <list>
+#include <vector>
 #include "scheduler.h"
 #include "cpu.h"
-#include "read_file.h"
 #include "process.h"
-#include "preemption_exception.h"
+#include "read_file.h"
 
 /**
  * @class Kernel
@@ -14,80 +13,140 @@
  * starting the scheduler.
  *
  */
+
 class Kernel {
 public:
-    Kernel() {}
 
-    ~Kernel() {}
+    Kernel ();
 
-    void start() {
-        read_file();
-        start_scheduler();
-    }
+    ~Kernel();
+
+    void start(int scheduler_type,
+                std::vector<ProcessParams *> processes_params);
 
 private:
-    Scheduler scheduler;
     CPU cpu;
-    std::vector<ProcessParams *> processes_params;
-
-    // Reads standard file and sets a vector of processes params.
-    void read_file() {
-        File f;
-        f.read_file();
-        processes_params = f.get_processes_params();
-    }
+    Scheduler* scheduler;
+    unsigned int process_counter;
 
     // For each second of the system running, feeds the scheduler with the
     // processes that are ready to enter scheduling.
-    void start_scheduler() {
+    void start_scheduler();
 
-        // Keeps track of the number of processes that have been created and
-        // have been sent to the scheduler so that search for ready processes
-        // can start from the last process that was created.
-        int process_counter = 0;
-        int time = 0;
-        bool running = true;
-
-        // Simulates the system running for each second.
-        while (running) {
-            // Creates a vector of processes that are ready to be processed.
-            vector<Process> new_processes = create_processes(
-                                                        time, process_counter);
-            /* scheduler.feed(new_processes); TODO: Implement this */
-            process_counter += new_processes.size();
-
-            try
-            {
-                running = scheduler.run();
-                // Only changes the state of the cpu if the scheduler has
-                // not thrown a PreemptionException.
-                cpu.change_state();
-            }
-            catch(const PreemptionException e)
-            {
-                cpu.handle_preemption(e.get_preempted_pid(),
-                                        e.get_scheduled_pid());
-            }
-            ++time;
-        }
-    }
-
-    // Returns a list of processes that were required to be created at the
+    // Returns a vector of processes that were required to be created at the
     // current time.
-    vector<Process> create_processes(int current_time, int process_counter) {
-        vector<Process> processes;
-        for (int i = process_counter; i < processes_params.size(); i++)
-        {
-            if (processes_params[i]->get_creation_time() == current_time)
-            {
-                processes.push_back(
-                    Process(
-                        // Insert process params into the process.
-                    ));
-            }
+    std::vector<Process> create_processes(unsigned int current_time);
+
+    struct CompareProcessParams {
+        bool operator()(const ProcessParams* lhs, const ProcessParams* rhs) const {
+            return lhs->get_creation_time() > rhs->get_creation_time();
         }
-        return processes;
+    };
+    std::priority_queue<ProcessParams*, std::vector<ProcessParams*>,
+                        CompareProcessParams> params_queue;
+};
+
+enum SchedulerType {
+    FCFS = 1,
+    SJF,
+    PNP,
+    PP,
+    RR
+};
+
+class SchedulerFactory {
+public:
+    SchedulerFactory() {}
+
+    ~SchedulerFactory() {}
+
+    Scheduler* create_scheduler(unsigned int scheduler_type) {
+        switch (scheduler_type)
+        {
+        case FCFS:
+            return new FCFScheduler();
+            break;
+        case SJF:
+            return new SJFScheduler();
+            break;
+        /* case PNP:
+            return new PNPScheduler();
+            break;
+        case PP:
+            return new PPScheduler();
+            break;
+        case RR:
+            return new RRNPScheduler();
+            break; */
+        default:
+            return new FCFScheduler();
+            break;
+        }
     }
 };
 
 #endif // KERNEL_H
+
+
+Kernel::Kernel() {
+        cpu = CPU();
+    }
+
+Kernel::~Kernel() {}
+
+void Kernel::start(int scheduler_type,
+                    std::vector<ProcessParams *> processes_params) {
+
+    // Creates a priority queue of processes params, ordered by creation time.
+    params_queue = std::priority_queue<ProcessParams*,
+                    std::vector<ProcessParams*>,
+                    CompareProcessParams>(  processes_params.begin(),
+                                            processes_params.end());
+
+    // Initializes the scheduler according to the scheduler type.
+    scheduler = SchedulerFactory().create_scheduler(scheduler_type);
+    start_scheduler();
+}
+
+void Kernel::start_scheduler() {
+
+    process_counter = 0;
+    unsigned int time = 0;
+    bool running = true;
+
+    // Simulates the system running for each second.
+    while (running) {
+
+        // Creates a vector of processes that are ready to be processed.
+        std::vector<Process> new_processes = create_processes(time);
+        scheduler->feed(new_processes);
+
+        try
+        {
+            running = scheduler->run();
+            // Only changes the state of the cpu if the scheduler has not thrown
+            // a PreemptionException.
+            cpu.change_state();
+        }
+        catch(const exception e)
+        {
+            // cpu.handle_preemption(e.get_preempted_pid(),
+            //                         e.get_scheduled_pid());
+        }
+        ++time;
+    }
+}
+
+std::vector<Process> Kernel::create_processes(unsigned int current_time) {
+    std::vector<Process> processes;
+    while (!params_queue.empty() &&
+            params_queue.top()->get_creation_time() == current_time) {
+        ProcessParams* params = params_queue.top();
+        params_queue.pop();
+        processes.push_back(Process(process_counter,
+                                    params->get_duration(),
+                                    params->get_priority()));
+        ++process_counter;
+    }
+    return processes;
+}
