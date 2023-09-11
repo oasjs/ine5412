@@ -39,10 +39,10 @@ public:
     }
 
     // Handles the preemption of a process.
-    void handle_preemption(int active_pid, int scheduled_pid) {
+    void handle_preemption(int preempted_pid, int scheduled_pid) {
 
         // Saves the context of the process that was running.
-        save_context(active_pid);
+        save_context(preempted_pid);
 
         // Loads the context of the process that is scheduled to run. If the
         // process is new, its context will be empty.
