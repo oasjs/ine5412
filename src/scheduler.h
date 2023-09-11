@@ -4,7 +4,7 @@
 #include <queue>
 #include <iostream>
 #include "process.h"
-#include "preemption_exception.h"
+#include "process_queue.h"
 
 /**
  * @class Scheduler
@@ -20,15 +20,50 @@ public:
         current_process = Process();
     }
 
-    virtual ~Scheduler() {}
-
-    virtual bool run() = 0;
-
-    virtual void feed(std::vector<Process> new_processes) = 0;
-
-    bool triggers_preemption() {
-        return false;
+    ~Scheduler() {
+        delete process_queue;
     }
+
+    /**
+     * @brief Runs the scheduler for one second.
+     *
+     * The scheduler will run the current process for one second.
+     * If the process is done, it will be removed from the queue
+     * and the next process will be executed.
+     *
+     * @return The pid of the process that was executed.
+     */
+    unsigned int run() {
+        if (process_queue->empty() && current_process.is_done()) {
+            return 0;
+        }
+        if (current_process.is_done()) {
+            current_process.setState(DONE);
+            current_process = process_queue->front();
+            process_queue->pop();
+        }
+        current_process.setState(RUNNING);
+        current_process.run();
+        return current_process.get_pid();
+    }
+
+    /**
+     * @brief Feeds the scheduler with new processes.
+     *
+     * @param new_processes The new processes to be fed.
+     */
+    void feed(std::vector<Process> new_processes) {
+        for (auto process : new_processes) {
+            process.setState(READY);
+            process_queue->push(process);
+        }
+    }
+
+    unsigned int get_current_pid() {
+        return current_process.get_pid();
+    }
+
+    virtual bool has_preemption() = 0;
 
     /**
      * The function that is going to print the Schedule
@@ -40,6 +75,8 @@ public:
 
 protected:
     Process current_process;
+    ProcessQueueWrapper *process_queue;
+
 };
 
 /**
@@ -53,42 +90,12 @@ protected:
  */
 class FCFScheduler : public Scheduler {
 public:
-    FCFScheduler() {
-        std::cout << "tempo P1 P2 P3 P4" << std::endl;
-    }
+    FCFScheduler() {process_queue = new ProcessQueue();}
 
-    ~FCFScheduler() {}
+    ~FCFScheduler() {delete process_queue;}
 
-    bool run() override {
-        if (current_process.is_done()) {
-            current_process.setState(DONE);
-        }
-
-        if (process_queue.empty() && current_process.is_done()) {
-            return false;
-        }
-        if (!current_process.get_duration() || current_process.is_done()) {
-            current_process = process_queue.front();
-            process_queue.pop();
-        }
-        current_process.setState(RUNNING); // Set process state to running
-        current_process.run();
-        return true;
-    }
-
-    void feed(std::vector<Process> new_processes) override {
-        for (auto process : new_processes) {
-            process.setState(READY);    // Set process state to ready
-            process_queue.push(process);
-        }
-    }
-
-    void printSchedule(unsigned int time) {
-        std::cout << time << " " << current_process.getStateMnemonic() << std::endl;  // TODO
-    }
-
-private:
-    std::queue<Process> process_queue;
+    bool has_preemption() {
+        return false;}
 
 };
 
@@ -101,38 +108,23 @@ private:
  *
  */
 class SJFScheduler : public Scheduler {
-public:
-    SJFScheduler() {}
-
-    ~SJFScheduler() {}
-
-    bool run() override {
-        if (process_queue.empty() && current_process.is_done()) {
-            return false;
-        }
-        if (!current_process.get_duration() || current_process.is_done()) {
-            current_process = process_queue.top();
-            process_queue.pop();
-        }
-        current_process.run();
-        return true;
-    }
-
-    void feed(std::vector<Process> new_processes) override {
-        for (auto process : new_processes) {
-            process_queue.push(process);
-        }
-    }
-
 private:
     struct CompareProcess {
         bool operator()(Process const& p1, Process const& p2) {
             return p1.get_duration() > p2.get_duration();
         }
     };
-    std::priority_queue<Process, std::vector<Process>, CompareProcess> process_queue;
+    CompareProcess c;
 
+public:
+    SJFScheduler() {
+        process_queue = new PriorityProcessQueue<CompareProcess>(c);}
 
+    ~SJFScheduler() {
+        delete process_queue;}
+
+    bool has_preemption() {
+        return false; }
 
 };
 
@@ -146,37 +138,23 @@ private:
  *
  */
 class PNPScheduler : public Scheduler {
-public:
-    PNPScheduler() {}
-
-    ~PNPScheduler() {}
-
-
-    void feed(std::vector<Process> new_processes) override {
-        for (auto process : new_processes) {
-            process_queue.push(process);
-        }
-    }
-
-    bool run() override {
-        if (process_queue.empty() && current_process.is_done()) {
-            return false;
-        }
-        if (!current_process.get_duration() || current_process.is_done()) {
-            current_process = process_queue.top();
-            process_queue.pop();
-        }
-        current_process.run();
-        return true;
-    }
-
 private:
     struct CompareProcess {
         bool operator()(Process const& p1, Process const& p2) {
-            return p1.get_priority() > p2.get_priority();
+            return p1.get_priority() < p2.get_priority();
         }
     };
-    std::priority_queue<Process, std::vector<Process>, CompareProcess> process_queue;
+    CompareProcess c;
+
+public:
+    PNPScheduler() {
+        process_queue = new PriorityProcessQueue<CompareProcess>(c);}
+
+    ~PNPScheduler() {
+        delete process_queue;}
+
+    bool has_preemption() {
+        return false; }
 
 };
 
@@ -187,12 +165,22 @@ private:
  * The 
  *
  */
-class PPScheduler : public Scheduler {
+class PPScheduler : public PNPScheduler {
 public:
     PPScheduler() {}
 
     ~PPScheduler() {}
 
+    bool has_preemption() {
+        if (current_process.get_priority() <
+                                    process_queue->front().get_priority()) {
+            process_queue->push(current_process);
+            current_process = process_queue->front();
+            process_queue->pop();
+            return true;
+        }
+        return false;
+    }
 };
 
 /**
@@ -206,10 +194,25 @@ public:
  *
  */
 class RRNPScheduler : public Scheduler {
-public:
-    RRNPScheduler() {}
+private:
+    unsigned int quantum;
 
-    ~RRNPScheduler() {}
+public:
+    RRNPScheduler() : quantum(2) {
+        process_queue = new ProcessQueue();}
+
+    ~RRNPScheduler() {
+        delete process_queue;}
+
+    bool has_preemption() {
+        if (current_process.get_total_execution_time() % quantum == 0) {
+            process_queue->push(current_process);
+            current_process = process_queue->front();
+            process_queue->pop();
+            return true;
+        }
+        return false;
+    }
 
 };
 
