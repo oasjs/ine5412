@@ -81,6 +81,12 @@ public:
     unsigned int get_priority() const {
         return priority;}
 
+    /**
+     * @brief Returns the total execution time of the process.
+     */
+    unsigned int get_total_execution_time() const {
+        return total_execution_time;}
+
 protected:
     unsigned int    pid;
     unsigned int    duration;
