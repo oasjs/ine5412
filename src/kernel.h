@@ -29,18 +29,25 @@ private:
     CPU cpu;
     Scheduler* scheduler;
     unsigned int process_counter;
+    unsigned int current_time;
+    unsigned int ran_pid; // pid of the process that ran in the last second.
 
-    // For each second of the system running, feeds the scheduler with the
-    // processes that are ready to enter scheduling.
+    /**
+     * Starts the scheduler. For each second of the system running, feeds the
+     * scheduler with the processes that are ready to enter scheduling.
+     */
     void start_scheduler();
 
-    // Returns a vector of processes that were required to be created at the
-    // current time.
-    std::vector<Process> create_processes(unsigned int current_time);
+    /**
+     * @brief Returns a vector of processes that were required to be created at
+     * the current time.
+     */
+    std::vector<Process> create_processes();
+
 
     struct CompareProcessParams {
         bool operator()(const ProcessParams* lhs, const ProcessParams* rhs) const {
-            return lhs->get_creation_time() > rhs->get_creation_time();
+            return lhs->get_creation_time() >= rhs->get_creation_time();
         }
     };
     std::priority_queue<ProcessParams*, std::vector<ProcessParams*>,
@@ -70,7 +77,7 @@ public:
         case SJF:
             return new SJFScheduler();
             break;
-        /* case PNP:
+        case PNP:
             return new PNPScheduler();
             break;
         case PP:
@@ -78,7 +85,7 @@ public:
             break;
         case RR:
             return new RRNPScheduler();
-            break; */
+            break;
         default:
             return new FCFScheduler();
             break;
@@ -89,9 +96,10 @@ public:
 #endif // KERNEL_H
 
 
-Kernel::Kernel() {
-        cpu = CPU();
-    }
+Kernel::Kernel() :  cpu(CPU()),
+                    scheduler(nullptr),
+                    current_time(0),
+                    process_counter(0) {}
 
 Kernel::~Kernel() {}
 
@@ -111,41 +119,41 @@ void Kernel::start(int scheduler_type,
 
 void Kernel::start_scheduler() {
 
-    process_counter = 0;
-    unsigned int time = 0;
-    bool running = true;
+    if (scheduler == nullptr)
+        return;
+
+    process_counter = 1;
+    ran_pid = 1;
+    bool running = ran_pid || !params_queue.empty();
 
     // Simulates the system running for each second.
     while (running) {
 
         // Creates a vector of processes that are ready to be processed.
-        std::vector<Process> new_processes = create_processes(time);
+        std::vector<Process> new_processes = create_processes();
         scheduler->feed(new_processes);
 
-        try
-        {
-            running = scheduler->run();
-            scheduler->printSchedule(time);
-            // Only changes the state of the cpu if the scheduler has not thrown
-            // a PreemptionException.
+        if (scheduler->has_preemption())
+            cpu.handle_preemption(ran_pid,
+                                    scheduler->get_current_pid());
+
+        ran_pid = scheduler->run();
+        if (ran_pid)
             cpu.change_state();
-        }
-        catch(const exception e)
-        {
-            // cpu.handle_preemption(e.get_preempted_pid(),
-            //                         e.get_scheduled_pid());
-        }
-        ++time;
+        // scheduler->printSchedule(current_time);
+        std::cout << "Time: " << current_time << " PID: " << ran_pid << std::endl;
+        ++current_time;
+        running = ran_pid || !params_queue.empty();
     }
 }
 
-std::vector<Process> Kernel::create_processes(unsigned int current_time) {
+std::vector<Process> Kernel::create_processes() {
     std::vector<Process> processes;
     while (!params_queue.empty() &&
             params_queue.top()->get_creation_time() == current_time) {
         ProcessParams* params = params_queue.top();
         params_queue.pop();
-        processes.push_back(Process(process_counter,
+        processes.push_back(Process((process_counter),
                                     params->get_duration(),
                                     params->get_priority()));
         ++process_counter;
