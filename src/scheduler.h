@@ -173,7 +173,8 @@ public:
 
     bool has_preemption() {
         if (current_process.get_priority() <
-                                    process_queue->front().get_priority()) {
+                                    process_queue->front().get_priority()
+                                    && !current_process.is_done()) {
             process_queue->push(current_process);
             current_process = process_queue->front();
             process_queue->pop();
@@ -198,14 +199,15 @@ private:
     unsigned int quantum;
 
 public:
-    RRNPScheduler() : quantum(2) {
+    RRNPScheduler(unsigned int q) : quantum(q) {
         process_queue = new ProcessQueue();}
 
     ~RRNPScheduler() {
         delete process_queue;}
 
     bool has_preemption() {
-        if (current_process.get_total_execution_time() % quantum == 0) {
+        if (current_process.get_total_execution_time() % quantum == 0
+            && !current_process.is_done()) {
             process_queue->push(current_process);
             current_process = process_queue->front();
             process_queue->pop();
