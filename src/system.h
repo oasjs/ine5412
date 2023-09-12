@@ -6,7 +6,7 @@
 
 /**
  * @class System
- * @brief Represents the System and its contents.
+ * @brief Represents the Operating System.
  *
  */
 class System
@@ -16,7 +16,10 @@ public:
 
 	~System() {}
 
-    void start(int scheduler_type) {
+    /**
+     * @brief Starts the system. It reads the file and starts the kernel.
+     */
+    void start(unsigned int scheduler_type) {
         file.read_file();
         if (scheduler_type)
             kernel.start(scheduler_type, file.get_processes_params());

@@ -5,7 +5,8 @@
 
 /**
  * @class Context
- * @brief Represents the Context and its contents.
+ * @brief Represents the context of a process. It contains the registers, the
+ * stack pointer, the program counter and the status.
  *
  */
 class Context {

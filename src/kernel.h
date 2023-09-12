@@ -10,8 +10,7 @@
 
 /**
  * @class Kernel
- * @brief Represents the system kernel, responsible for reading the file and
- * starting the scheduler.
+ * @brief Represents the system system kernel.
  *
  */
 
@@ -22,6 +21,10 @@ public:
 
     ~Kernel();
 
+    /**
+     * @brief Starts the kernel. Creates the process parameters priority queue
+     * instantiates the scheduler and calls start_scheduler().
+     */
     void start(int scheduler_type,
                 std::vector<ProcessParams *> processes_params);
 
@@ -33,14 +36,17 @@ private:
     unsigned int ran_pid; // pid of the process that ran in the last second.
 
     /**
-     * Starts the scheduler. For each second of the system running, feeds the
-     * scheduler with the processes that are ready to enter scheduling.
+     * @brief Starts the scheduler. For each second of the system running, 
+     * feeds the scheduler with the processes that are ready to enter 
+     * scheduling.
      */
     void start_scheduler();
 
     /**
-     * @brief Returns a vector of processes that were required to be created at
-     * the current time.
+     * @brief Goes through the queue of process paramaters and creates the
+     * processes that are ready to be created at the current time.
+     * @return A vector<Process> containing the processes that were required to
+     * be created at the current time.
      */
     std::vector<Process> create_processes();
 
@@ -50,6 +56,9 @@ private:
             return lhs->get_creation_time() >= rhs->get_creation_time();
         }
     };
+    /**
+     * @brief A priority queue of process parameters, ordered by creation time.
+     */
     std::priority_queue<ProcessParams*, std::vector<ProcessParams*>,
                         CompareProcessParams> params_queue;
 };
@@ -68,6 +77,13 @@ public:
 
     ~SchedulerFactory() {}
 
+    /**
+     * @brief Creates a scheduler according to the scheduler type.
+     * @param scheduler_type The type of scheduler to be created.
+     * @param quantum The quantum of the scheduler, if it is a Round Robin
+     * scheduler. Defaults to 2.
+     * @return A pointer to the created scheduler.
+     */
     Scheduler* create_scheduler(unsigned int scheduler_type,
                                 unsigned int quantum = 2) {
         switch (scheduler_type)
@@ -102,7 +118,9 @@ Kernel::Kernel() :  cpu(CPU()),
                     current_time(0),
                     process_counter(0) {}
 
-Kernel::~Kernel() {}
+Kernel::~Kernel() {
+    delete scheduler;
+}
 
 void Kernel::start(int scheduler_type,
                     std::vector<ProcessParams *> processes_params) {

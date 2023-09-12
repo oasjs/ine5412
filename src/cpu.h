@@ -22,7 +22,11 @@ public:
 
     ~CPU() {}
 
-    // Simulates the CPU changing states as it executes a process.
+    /**
+     * @brief Processes a process. If the process was already running, it will
+     * continue to run. Otherwise, it will load the context of the process.
+     * @param pid The id of the current process.
+     */
     void process(unsigned int pid) {
 
         // If the process was already running, it will continue to run.
@@ -47,7 +51,12 @@ public:
 
     }
 
-    // Handles the preemption of a process.
+    /**
+     * @brief Saves the context of the preempted process and loads the context
+     * of the scheduled process.
+     * @param preempted_pid The id of the preempted process.
+     * @param scheduled_pid The id of the scheduled process.
+     */
     void handle_preemption(int preempted_pid, int scheduled_pid) {
 
         // Saves the context of the process that was running.

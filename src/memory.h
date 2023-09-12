@@ -18,8 +18,10 @@ public:
         contextMap[pid] = context;
     }
 
-    // Returns the context of a process given its pid if it exists. Otherwise,
-    // returns an empty context.
+    /**
+     * @brief Loads the context of a process. If the process has no context
+     * saved, returns an empty context.
+     */
     Context load_context(int pid) {
         if (contextMap.find(pid) != contextMap.end())
             return contextMap[pid];

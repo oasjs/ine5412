@@ -4,7 +4,11 @@
 #include <queue>
 #include "process.h"
 
-
+/**
+ * @class ProcessQueueWrapper
+ * @brief Wrapper for the process queue. This is used to make the scheduler
+ * independent of the queue implementation.
+ */
 class ProcessQueueWrapper {
 public:
     virtual void push(Process process) = 0;
