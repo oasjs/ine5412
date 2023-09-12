@@ -21,8 +21,7 @@ public:
     }
 
     ~Scheduler() {
-        delete process_queue;
-    }
+        delete process_queue;}
 
     /**
      * @brief Runs the scheduler for one second.
@@ -90,9 +89,8 @@ protected:
  */
 class FCFScheduler : public Scheduler {
 public:
-    FCFScheduler() {process_queue = new ProcessQueue();}
-
-    ~FCFScheduler() {delete process_queue;}
+    FCFScheduler() : Scheduler() {
+        process_queue = new ProcessQueue();}
 
     bool has_preemption() {
         return false;}
@@ -117,11 +115,8 @@ private:
     CompareProcess c;
 
 public:
-    SJFScheduler() {
+    SJFScheduler() : Scheduler() {
         process_queue = new PriorityProcessQueue<CompareProcess>(c);}
-
-    ~SJFScheduler() {
-        delete process_queue;}
 
     bool has_preemption() {
         return false; }
@@ -147,11 +142,8 @@ private:
     CompareProcess c;
 
 public:
-    PNPScheduler() {
+    PNPScheduler() : Scheduler() {
         process_queue = new PriorityProcessQueue<CompareProcess>(c);}
-
-    ~PNPScheduler() {
-        delete process_queue;}
 
     bool has_preemption() {
         return false; }
@@ -167,10 +159,6 @@ public:
  */
 class PPScheduler : public PNPScheduler {
 public:
-    PPScheduler() {}
-
-    ~PPScheduler() {}
-
     bool has_preemption() {
         if (current_process.get_priority() <
                                     process_queue->front().get_priority()
@@ -199,11 +187,8 @@ private:
     unsigned int quantum;
 
 public:
-    RRNPScheduler(unsigned int q) : quantum(q) {
+    RRNPScheduler(unsigned int q) : quantum(q), Scheduler() {
         process_queue = new ProcessQueue();}
-
-    ~RRNPScheduler() {
-        delete process_queue;}
 
     bool has_preemption() {
         if (current_process.get_total_execution_time() % quantum == 0

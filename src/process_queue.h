@@ -7,10 +7,14 @@
 /**
  * @class ProcessQueueWrapper
  * @brief Wrapper for the process queue. This is used to make the scheduler
- * independent of the queue implementation.
+ * 
  */
 class ProcessQueueWrapper {
 public:
+    ProcessQueueWrapper() {}
+
+    virtual ~ProcessQueueWrapper() {}
+
     virtual void push(Process process) = 0;
 
     virtual Process front() = 0;
@@ -26,6 +30,8 @@ public:
 class ProcessQueue : public ProcessQueueWrapper {
 public:
     ProcessQueue() {}
+
+    ~ProcessQueue() {}
 
     void push(Process process) {
         queue.push(process);
@@ -58,6 +64,8 @@ private:
 
 public:
     PriorityProcessQueue(const Comparator& c) : queue(c) {}
+
+    ~PriorityProcessQueue() {}
 
     void push(Process process) {
         queue.push(process);
