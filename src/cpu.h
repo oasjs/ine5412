@@ -14,7 +14,7 @@
 class CPU {
 public:
     CPU() {
-        registers = std::vector<int>(6);
+        registers = std::vector<unsigned int>(6);
         sp = 0;
         pc = 0;
         st = 0;
@@ -23,19 +23,28 @@ public:
     ~CPU() {}
 
     // Simulates the CPU changing states as it executes a process.
-    void change_state() {
-        // Prepares to generate a random number.
-        std::random_device rd;
-        std::mt19937 gen(rd());
-        std::uniform_int_distribution<> dis(0, 100);
+    void process(unsigned int pid) {
 
-        // Sets each information of the cpu state to a random number.
-        for (int n = 0; n < 6; ++n) {
-            registers[n] = dis(gen);
+        // If the process was already running, it will continue to run.
+        // This simulates the process being ran.
+        if (pid == registers[0]) {
+            // Prepares to generate a random number.
+            std::random_device rd;
+            std::mt19937 gen(rd());
+            std::uniform_int_distribution<> dis(0, 100);
+
+            // Sets each information of the cpu state to a random number.
+            for (int n = 1; n < 6; ++n) {
+                registers[n] = dis(gen);
+            }
+            int sp = dis(gen);
+            int pc = dis(gen);
+            int st = dis(gen);
+        // Otherwise, try to load the context of the process.
+        } else {
+            load_context(pid);
         }
-        int sp = dis(gen);
-        int pc = dis(gen);
-        int st = dis(gen);
+
     }
 
     // Handles the preemption of a process.
@@ -51,10 +60,10 @@ public:
 
 private:
     Memory memory;
-    std::vector<int> registers;
-    int sp; // Stack Pointer
-    int pc; // Program Counter
-    int st; // Status
+    std::vector<unsigned int> registers;
+    unsigned int sp; // Stack Pointer
+    unsigned int pc; // Program Counter
+    unsigned int st; // Status
 
     // Loads the context of a process from memory.
     void load_context(int pid) {
