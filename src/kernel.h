@@ -68,7 +68,8 @@ public:
 
     ~SchedulerFactory() {}
 
-    Scheduler* create_scheduler(unsigned int scheduler_type) {
+    Scheduler* create_scheduler(unsigned int scheduler_type,
+                                unsigned int quantum = 2) {
         switch (scheduler_type)
         {
         case FCFS:
@@ -84,7 +85,7 @@ public:
             return new PPScheduler();
             break;
         case RR:
-            return new RRNPScheduler();
+            return new RRNPScheduler(quantum);
             break;
         default:
             return new FCFScheduler();
@@ -139,7 +140,7 @@ void Kernel::start_scheduler() {
 
         ran_pid = scheduler->run();
         if (ran_pid)
-            cpu.change_state();
+            cpu.process(ran_pid);
         // scheduler->printSchedule(current_time);
         std::cout << "Time: " << current_time << " PID: " << ran_pid << std::endl;
         ++current_time;
