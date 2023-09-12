@@ -12,13 +12,16 @@ class Context {
 public:
 
     Context() {
-        registers = std::vector<int>(6);
+        registers = std::vector<unsigned int>(6);
         sp = 0;
         pc = 0;
         st = 0;
     }
 
-    Context(std::vector<int> registers_, int sp_, int pc_, int st_) {
+    Context(std::vector<unsigned int> registers_,
+            unsigned int sp_,
+            unsigned int pc_,
+            unsigned int st_) {
         registers = registers_;
         sp = sp_;
         pc = pc_;
@@ -27,27 +30,27 @@ public:
 
     ~Context() {}
 
-    std::vector<int> get_registers() {
+    std::vector<unsigned int> get_registers() {
         return registers;
     }
 
-    int get_sp()  {
+    unsigned int get_sp()  {
         return sp;
     }
 
-    int get_pc() {
+    unsigned int get_pc() {
         return pc;
     }
 
-    int get_st() {
+    unsigned int get_st() {
         return st;
     }
 
 private:
-    std::vector<int> registers;
-    int sp; // Stack Pointer
-    int pc; // Program Counter
-    int st; // Status
+    std::vector<unsigned int> registers;
+    unsigned int sp; // Stack Pointer
+    unsigned int pc; // Program Counter
+    unsigned int st; // Status
 };
 
 #endif // CONTEXT_H
