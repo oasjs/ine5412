@@ -17,7 +17,8 @@
 class Scheduler {
 public:
     Scheduler() {
-        current_process = new Process();
+        init_process = new Process();
+        current_process = init_process;
     }
 
     virtual ~Scheduler() {}
@@ -63,15 +64,8 @@ public:
 
     virtual bool has_preemption() = 0;
 
-    /**
-     * The function that is going to print the Schedule
-     * 
-     */
-    void printSchedule(unsigned int time) {
-        std::cout << time << " " << current_process->get_state() << std::endl;  // TODO
-    }
-
 protected:
+    Process* init_process;
     Process* current_process;
     ProcessQueueWrapper *process_queue;
 
@@ -92,7 +86,9 @@ public:
         process_queue = new ProcessQueue();}
 
     ~FCFScheduler() {
-        delete process_queue;}
+        delete init_process;
+        delete process_queue;
+    }
 
     bool has_preemption() {
         return false;}
@@ -121,7 +117,9 @@ public:
         process_queue = new PriorityProcessQueue<CompareProcess>(c);}
 
     ~SJFScheduler() {
-        delete process_queue;}
+        delete process_queue;
+        delete init_process;
+    }
 
     bool has_preemption() {
         return false; }
@@ -151,7 +149,9 @@ public:
         process_queue = new PriorityProcessQueue<CompareProcess>(c);}
 
     ~PNPScheduler() {
-        delete process_queue;}
+        delete process_queue;
+        delete init_process;
+    }
 
     bool has_preemption() {
         return false; }
@@ -168,13 +168,15 @@ public:
 class PPScheduler : public PNPScheduler {
 public:
     bool has_preemption() {
-        if (current_process->get_priority() <
-                                    process_queue->front()->get_priority()
-                                    && !current_process->is_done()) {
-            process_queue->push(current_process);
-            current_process = process_queue->front();
-            process_queue->pop();
-            return true;
+        if (!current_process->is_done() && !process_queue->empty()) {
+            if (current_process->get_priority() <
+                process_queue->front()->get_priority()
+                ) {
+                process_queue->push(current_process);
+                current_process = process_queue->front();
+                process_queue->pop();
+                return true;
+            }
         }
         return false;
     }
@@ -199,15 +201,18 @@ public:
         process_queue = new ProcessQueue();}
 
     ~RRNPScheduler() {
-        delete process_queue;}
+        delete init_process;
+        delete process_queue;
+    }
 
     bool has_preemption() {
-        if (current_process->get_total_execution_time() % quantum == 0
-            && !current_process->is_done()) {
-            process_queue->push(current_process);
-            current_process = process_queue->front();
-            process_queue->pop();
-            return true;
+        if (!current_process->is_done() && !process_queue->empty()) {
+            if (current_process->get_total_execution_time() % quantum == 0) {
+                process_queue->push(current_process);
+                current_process = process_queue->front();
+                process_queue->pop();
+                return true;
+            }
         }
         return false;
     }
