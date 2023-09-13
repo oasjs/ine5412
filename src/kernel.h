@@ -142,7 +142,7 @@ void Kernel::start_scheduler(unsigned int scheduler_type) {
     scheduler = SchedulerFactory().create_scheduler(scheduler_type);
 
     number_of_processes = params_queue.size();
-    bool running = process_counter < params_queue.size();
+    bool running = process_counter < number_of_processes;
 
     // Simulates the system running for each second.
     while (running) {
@@ -156,10 +156,10 @@ void Kernel::start_scheduler(unsigned int scheduler_type) {
                                     scheduler->get_current_pid());
 
         ran_pid = scheduler->run();
-        if (ran_pid)
+        if (ran_pid) {
             cpu.process(ran_pid);
-
-        print_schedule(current_time);
+            print_schedule(current_time);
+        }
 
         ++current_time;
         running = ran_pid || process_counter < number_of_processes;
@@ -196,18 +196,21 @@ std::vector<Process*> Kernel::create_processes() {
 
 void Kernel::print_schedule(unsigned int current_time) {
     if (current_time == 0) {
-        std::cout << std::setw(6) << "tempo";
+        std::cout << std::setw(3) << std::right << "" << "tempo"
+                << std::setw(3) << std::left << "";
         for (std::size_t i = 1; i <= number_of_processes; i++) {
-            std::cout << std::setw(5) << " P" << i;
+            std::string process_code = "P" + std::to_string(i);
+            std::cout << std::setw(4) << std::right << process_code;
         }
         std::cout << std::endl;
     }
 
-    std::cout << std::setw(2) << current_time << "-" << std::setw(2) << (current_time + 1) << std::setw(3) << " ";
+    std::cout << std::setw(5) << std::right << current_time << "-" << std::setw(5) << std::left << (current_time + 1);
 
     for (std::size_t i = 1; i <= number_of_processes; i++) {
         if (i <= kernel_processes_vector.size()) {
-            std::cout << std::setw(4) << kernel_processes_vector[i - 1]->get_state();
+            std::cout << std::setw(4) << std::right
+            << kernel_processes_vector[i - 1]->get_state();
         } else {
             std::cout << std::setw(5) << "  ";
         }
