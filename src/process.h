@@ -45,13 +45,13 @@ public:
         return total_execution_time >= duration;
     }
 
-    void setState(unsigned int s) {
+    void set_state(unsigned int s) {
         if (s == READY || s == RUNNING || s == DONE) {
+            // std::cout << "Set State PID: " << pid << " State: " << state << std::endl;
             state = s;
         }
     } 
-
-    std::string getStateMnemonic() {
+    std::string get_state() {
         if (state == READY) {
             return "--";
         } else if (state == RUNNING) {

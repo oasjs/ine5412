@@ -2,6 +2,7 @@
 #define KERNEL_H
 
 #include <vector>
+#include <iomanip>
 #include "scheduler.h"
 #include "cpu.h"
 #include "process.h"
@@ -30,6 +31,8 @@ public:
 private:
     CPU cpu;
     Scheduler* scheduler;
+    std::vector<Process*> kernel_processes_vector;
+    unsigned int number_of_processes;
     unsigned int process_counter;
     unsigned int current_time;
     unsigned int ran_pid; // pid of the process that ran in the last second.
@@ -47,9 +50,10 @@ private:
      * @return A vector<Process> containing the processes that were required to
      * be created at the current time.
      */
-    std::vector<Process> create_processes();
+    std::vector<Process*> create_processes();
 
-
+    void print_schedule(unsigned int current_time);
+    
     struct CompareProcessParams {
         bool operator()(const ProcessParams* lhs, const ProcessParams* rhs) const {
             return lhs->get_creation_time() >= rhs->get_creation_time();
@@ -130,6 +134,8 @@ void Kernel::start(int scheduler_type,
                     CompareProcessParams>(  processes_params.begin(),
                                             processes_params.end());
 
+    number_of_processes = params_queue.size();
+
     // Initializes the scheduler according to the scheduler type.
     scheduler = SchedulerFactory().create_scheduler(scheduler_type);
     start_scheduler();
@@ -148,7 +154,7 @@ void Kernel::start_scheduler() {
     while (running) {
 
         // Creates a vector of processes that are ready to be processed.
-        std::vector<Process> new_processes = create_processes();
+        std::vector<Process*> new_processes = create_processes();
         scheduler->feed(new_processes);
 
         if (scheduler->has_preemption())
@@ -158,23 +164,46 @@ void Kernel::start_scheduler() {
         ran_pid = scheduler->run();
         if (ran_pid)
             cpu.process(ran_pid);
-        // scheduler->printSchedule(current_time);
-        std::cout << "Time: " << current_time << " PID: " << ran_pid << std::endl;
+        print_schedule(current_time);
+        // std::cout << "Time: " << current_time << " PID: " << ran_pid << std::endl;
         ++current_time;
         running = ran_pid || !params_queue.empty();
     }
 }
 
-std::vector<Process> Kernel::create_processes() {
-    std::vector<Process> processes;
+std::vector<Process*> Kernel::create_processes() {
+    std::vector<Process*> new_processes;
     while (!params_queue.empty() &&
             params_queue.top()->get_creation_time() == current_time) {
         ProcessParams* params = params_queue.top();
         params_queue.pop();
-        processes.push_back(Process((process_counter),
-                                    params->get_duration(),
-                                    params->get_priority()));
+        Process* new_p = new Process((process_counter),
+                                 params->get_duration(),
+                                 params->get_priority());
+        kernel_processes_vector.push_back(new_p);
+        new_processes.push_back(new_p);
         ++process_counter;
     }
-    return processes;
+    return new_processes;
+}
+
+void Kernel::print_schedule(unsigned int current_time) {
+    if (current_time == 0) {
+        std::cout << std::setw(6) << "tempo";
+        for (int i = 1; i <= number_of_processes; i++) {
+            std::cout << std::setw(4) << " P" << i;
+        }
+        std::cout << std::endl;
+    }
+
+    std::cout << std::setw(2) << current_time << "-" << std::setw(2) << (current_time + 1) << std::setw(3) << " ";
+
+    for (int i = 1; i <= number_of_processes; i++) {
+        if (i <= kernel_processes_vector.size()) {
+            std::cout << std::setw(4) << kernel_processes_vector[i - 1]->get_state();
+        } else {
+            std::cout << std::setw(4) << "  ";
+        }
+    }
+    std::cout << std::endl;
 }
