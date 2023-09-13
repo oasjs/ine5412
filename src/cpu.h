@@ -1,6 +1,7 @@
 #ifndef CPU_H
 #define CPU_H
 
+#include <iostream>
 #include <vector>
 #include <random>
 #include "context.h"
@@ -29,26 +30,39 @@ public:
      */
     void process(unsigned int pid) {
 
-        // If the process was already running, it will continue to run.
-        // This simulates the process being ran.
-        if (pid == registers[0]) {
-            // Prepares to generate a random number.
-            std::random_device rd;
-            std::mt19937 gen(rd());
-            std::uniform_int_distribution<> dis(0, 100);
-
-            // Sets each information of the cpu state to a random number.
-            for (int n = 1; n < 6; ++n) {
-                registers[n] = dis(gen);
-            }
-            sp = dis(gen);
-            pc = dis(gen);
-            st = dis(gen);
-        // Otherwise, try to load the context of the process.
-        } else {
+        // If the process is new to the processor, try to load its context.
+        if (pid != registers[0]) {
             load_context(pid);
+            registers[0] = pid;
         }
 
+        #ifdef DEBUG
+        std::cout   << "CPU State: " << std::endl;
+        std::cout   << "PID: " << registers[0] << std::endl;
+        std::cout   << "R1: " << registers[1] << "  "
+                    << "R2: " << registers[2] << "  "
+                    << "R3: " << registers[3] << "  "
+                    << "R4: " << registers[4] << "  "
+                    << "R5: " << registers[5] << std::endl;
+        std::cout   << "SP: " << sp << "  " 
+                    << "PC: " << pc << "  " 
+                    << "ST: " << st << std::endl;
+        std::cout   << std::endl;
+        #endif
+
+        // Simulates the process running for one second.
+        // Prepares to generate a random number.
+        std::random_device rd;
+        std::mt19937 gen(rd());
+        std::uniform_int_distribution<> dis(0, 100);
+
+        // Sets each information of the cpu state to a random number.
+        for (int n = 1; n < 6; ++n) {
+            registers[n] = dis(gen);
+        }
+        sp = dis(gen);
+        pc = dis(gen);
+        st = dis(gen);
     }
 
     /**
@@ -59,12 +73,43 @@ public:
      */
     void handle_preemption(int preempted_pid, int scheduled_pid) {
 
+        #ifdef DEBUG
+        std::cout   << "** A preemption has occured!" << std::endl;
+        std::cout   << "** Preempted PID: " << preempted_pid << std::endl;
+        std::cout   << "** Context: " << std::endl;
+        std::cout   << "** PID: " << registers[0] << std::endl;
+        std::cout   << "** R1: " << registers[1] << "  "
+                    << "R2: " << registers[2] << "  "
+                    << "R3: " << registers[3] << "  "
+                    << "R4: " << registers[4] << "  "
+                    << "R5: " << registers[5] << std::endl;
+        std::cout   << "** SP: " << sp << "  " 
+                    << "PC: " << pc << "  " 
+                    << "ST: " << st << std::endl;
+        std::cout   << std::endl;
+        #endif
+
         // Saves the context of the process that was running.
         save_context(preempted_pid);
 
         // Loads the context of the process that is scheduled to run. If the
         // process is new, its context will be empty.
         load_context(scheduled_pid);
+
+        #ifdef DEBUG
+        std::cout   << "** Scheduled PID: " << scheduled_pid << std::endl;
+        std::cout   << "** Context: " << std::endl;
+        std::cout   << "** PID: " << registers[0] << std::endl;
+        std::cout   << "** R1: " << registers[1] << "  "
+                    << "R2: " << registers[2] << "  "
+                    << "R3: " << registers[3] << "  "
+                    << "R4: " << registers[4] << "  "
+                    << "R5: " << registers[5] << std::endl;
+        std::cout   << "** SP: " << sp << "  " 
+                    << "PC: " << pc << "  " 
+                    << "ST: " << st << std::endl;
+        std::cout   << std::endl;
+        #endif
     }
 
 private:

@@ -158,7 +158,9 @@ void Kernel::start_scheduler(unsigned int scheduler_type) {
         ran_pid = scheduler->run();
         if (ran_pid) {
             cpu.process(ran_pid);
+            #ifndef DEBUG
             print_schedule(current_time);
+            #endif
         }
 
         ++current_time;
