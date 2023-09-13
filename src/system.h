@@ -24,13 +24,22 @@ public:
      */
     void start(unsigned int scheduler_type) {
 
+        std::string scheduling_types[] = {"First Come First Served",
+                                         "Shortest Job First",
+                                         "Priority, no preemption",
+                                         "Prioity, with preemption",
+                                         "Round Robin"};
+
         if (scheduler_type) {
             kernel.start_scheduler(scheduler_type);
 
         } else {
-            std::cout << "Scheduler type: " << scheduler_type << std::endl;
-            for (int i = 1; i <= 5; i++)
+            for (int i = 1; i <= 5; i++) {
+                std::cout << "Scheduler type: " << scheduling_types[i-1]
+                                                << std::endl << std::endl;
                 kernel.start_scheduler(i);
+                std::cout << std::endl;
+            }
         }
     }
 
