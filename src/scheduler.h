@@ -173,6 +173,7 @@ public:
                 process_queue->front()->get_priority()
                 ) {
                 process_queue->push(current_process);
+                current_process->set_state(READY);
                 current_process = process_queue->front();
                 process_queue->pop();
                 return true;
@@ -209,6 +210,7 @@ public:
         if (!current_process->is_done() && !process_queue->empty()) {
             if (current_process->get_total_execution_time() % quantum == 0) {
                 process_queue->push(current_process);
+                current_process->set_state(READY);
                 current_process = process_queue->front();
                 process_queue->pop();
                 return true;
