@@ -52,12 +52,21 @@ public:
         }
     } 
     std::string get_state() {
-        if (state == READY) {
+        switch (state)
+        {
+        case READY:
             return "--";
-        } else if (state == RUNNING) {
+            break;
+        case RUNNING:
             return "##";
-        } else {
+            break;
+        case
+            DONE:
             return "  ";
+            break;
+        default:
+            return "  ";
+            break;
         }
     }
 
