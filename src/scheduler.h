@@ -17,7 +17,7 @@
 class Scheduler {
 public:
     Scheduler() {
-        current_process = Process();
+        current_process = new Process();
     }
 
     virtual ~Scheduler() {}
@@ -32,17 +32,17 @@ public:
      * @return The pid of the process that was executed.
      */
     unsigned int run() {
-        if (process_queue->empty() && current_process.is_done()) {
+        if (process_queue->empty() && current_process->is_done()) {
             return 0;
         }
-        if (current_process.is_done()) {
-            current_process.setState(DONE);
+        if (current_process->is_done()) {
+            current_process->set_state(DONE);
             current_process = process_queue->front();
             process_queue->pop();
         }
-        current_process.setState(RUNNING);
-        current_process.run();
-        return current_process.get_pid();
+        current_process->set_state(RUNNING);
+        current_process->run();
+        return current_process->get_pid();
     }
 
     /**
@@ -50,15 +50,15 @@ public:
      *
      * @param new_processes The new processes to be fed.
      */
-    void feed(std::vector<Process> new_processes) {
+    void feed(std::vector<Process*> new_processes) {
         for (auto process : new_processes) {
-            process.setState(READY);
+            process->set_state(READY);
             process_queue->push(process);
         }
     }
 
     unsigned int get_current_pid() {
-        return current_process.get_pid();
+        return current_process->get_pid();
     }
 
     virtual bool has_preemption() = 0;
@@ -68,11 +68,11 @@ public:
      * 
      */
     void printSchedule(unsigned int time) {
-        std::cout << time << " " << current_process.getStateMnemonic() << std::endl;  // TODO
+        std::cout << time << " " << current_process->get_state() << std::endl;  // TODO
     }
 
 protected:
-    Process current_process;
+    Process* current_process;
     ProcessQueueWrapper *process_queue;
 
 };
@@ -110,8 +110,8 @@ public:
 class SJFScheduler : public Scheduler {
 private:
     struct CompareProcess {
-        bool operator()(Process const& p1, Process const& p2) {
-            return p1.get_duration() > p2.get_duration();
+        bool operator()(Process* const& p1, Process* const& p2) {
+            return p1->get_duration() > p2->get_duration();
         }
     };
     CompareProcess c;
@@ -140,8 +140,8 @@ public:
 class PNPScheduler : public Scheduler {
 private:
     struct CompareProcess {
-        bool operator()(Process const& p1, Process const& p2) {
-            return p1.get_priority() < p2.get_priority();
+        bool operator()(Process* const& p1, Process* const& p2) {
+            return p1->get_priority() < p2->get_priority();
         }
     };
     CompareProcess c;
@@ -168,9 +168,9 @@ public:
 class PPScheduler : public PNPScheduler {
 public:
     bool has_preemption() {
-        if (current_process.get_priority() <
-                                    process_queue->front().get_priority()
-                                    && !current_process.is_done()) {
+        if (current_process->get_priority() <
+                                    process_queue->front()->get_priority()
+                                    && !current_process->is_done()) {
             process_queue->push(current_process);
             current_process = process_queue->front();
             process_queue->pop();
@@ -202,8 +202,8 @@ public:
         delete process_queue;}
 
     bool has_preemption() {
-        if (current_process.get_total_execution_time() % quantum == 0
-            && !current_process.is_done()) {
+        if (current_process->get_total_execution_time() % quantum == 0
+            && !current_process->is_done()) {
             process_queue->push(current_process);
             current_process = process_queue->front();
             process_queue->pop();
