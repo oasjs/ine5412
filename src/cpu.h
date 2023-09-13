@@ -41,9 +41,9 @@ public:
             for (int n = 1; n < 6; ++n) {
                 registers[n] = dis(gen);
             }
-            int sp = dis(gen);
-            int pc = dis(gen);
-            int st = dis(gen);
+            sp = dis(gen);
+            pc = dis(gen);
+            st = dis(gen);
         // Otherwise, try to load the context of the process.
         } else {
             load_context(pid);
