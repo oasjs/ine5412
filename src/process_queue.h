@@ -21,6 +21,8 @@ public:
 
 class ProcessQueue : public ProcessQueueWrapper {
 public:
+    ~ProcessQueue() {}
+
     void push(Process* process) override {
         queue.push(process);
     }
@@ -57,6 +59,8 @@ private:
 
 public:
     PriorityProcessQueue(const Comparator& c) : queue(c) {}
+
+    ~PriorityProcessQueue() {}
 
     void push(Process* process) override {
         queue.push(process);
