@@ -19,23 +19,23 @@ public:
 		return os;
 	}
 
-    int get_creation_time() const {
+    unsigned int get_creation_time() const {
         return creation_time;
     }
 
-    int get_duration() const {
+    unsigned int get_duration() const {
         return duration;
     }
 
-    int get_priority() const {
+    unsigned int get_priority() const {
         return priority;
     }
 
 
 private:
-	int creation_time;
-	int duration; //seconds
-	int priority;
+	unsigned int creation_time;
+	unsigned int duration; //seconds
+	unsigned int priority;
 };
 
 class File

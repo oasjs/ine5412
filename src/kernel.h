@@ -114,8 +114,9 @@ public:
 
 Kernel::Kernel() :  cpu(CPU()),
                     scheduler(nullptr),
+                    process_counter(0),
                     current_time(0),
-                    process_counter(0) {}
+                    ran_pid(0) {}
 
 Kernel::~Kernel() {
     delete scheduler;

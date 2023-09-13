@@ -12,7 +12,7 @@
 class System
 {
 public:
-	System(char* file_name) : file(file_name), kernel() {}
+	System(char* file_name) : kernel(), file(file_name) {}
 
 	~System() {}
 

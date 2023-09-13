@@ -20,8 +20,7 @@ public:
         current_process = Process();
     }
 
-    ~Scheduler() {
-        delete process_queue;}
+    virtual ~Scheduler() {}
 
     /**
      * @brief Runs the scheduler for one second.
@@ -92,6 +91,9 @@ public:
     FCFScheduler() : Scheduler() {
         process_queue = new ProcessQueue();}
 
+    ~FCFScheduler() {
+        delete process_queue;}
+
     bool has_preemption() {
         return false;}
 
@@ -117,6 +119,9 @@ private:
 public:
     SJFScheduler() : Scheduler() {
         process_queue = new PriorityProcessQueue<CompareProcess>(c);}
+
+    ~SJFScheduler() {
+        delete process_queue;}
 
     bool has_preemption() {
         return false; }
@@ -144,6 +149,9 @@ private:
 public:
     PNPScheduler() : Scheduler() {
         process_queue = new PriorityProcessQueue<CompareProcess>(c);}
+
+    ~PNPScheduler() {
+        delete process_queue;}
 
     bool has_preemption() {
         return false; }
@@ -187,8 +195,11 @@ private:
     unsigned int quantum;
 
 public:
-    RRNPScheduler(unsigned int q) : quantum(q), Scheduler() {
+    RRNPScheduler(unsigned int q) : Scheduler(), quantum(q) {
         process_queue = new ProcessQueue();}
+
+    ~RRNPScheduler() {
+        delete process_queue;}
 
     bool has_preemption() {
         if (current_process.get_total_execution_time() % quantum == 0
