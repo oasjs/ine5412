@@ -12,7 +12,10 @@
 class System
 {
 public:
-	System(char* file_name) : kernel(), file(file_name) {}
+	System(char* file_name) : file(file_name) {
+        file.read_file();
+        kernel = Kernel(file.get_processes_params());
+    }
 
 	~System() {}
 
@@ -20,17 +23,20 @@ public:
      * @brief Starts the system. It reads the file and starts the kernel.
      */
     void start(unsigned int scheduler_type) {
-        file.read_file();
-        if (scheduler_type)
-            kernel.start(scheduler_type, file.get_processes_params());
-        else
-            for (int i = FCFS; i <= RR; i++)
-                kernel.start(i, file.get_processes_params());
+
+        if (scheduler_type) {
+            kernel.start_scheduler(scheduler_type);
+
+        } else {
+            std::cout << "Scheduler type: " << scheduler_type << std::endl;
+            for (int i = 1; i <= 5; i++)
+                kernel.start_scheduler(i);
+        }
     }
 
 private:
-	Kernel kernel;
     File file;
+	Kernel kernel;
 };
 
 

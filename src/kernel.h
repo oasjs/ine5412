@@ -1,9 +1,10 @@
 #ifndef KERNEL_H
 #define KERNEL_H
 
+#include <algorithm>
 #include <vector>
-#include "scheduler.h"
 #include "cpu.h"
+#include "scheduler.h"
 #include "process.h"
 #include "read_file.h"
 
@@ -16,16 +17,18 @@
 class Kernel {
 public:
 
-    Kernel ();
+    Kernel();
+
+    Kernel(std::vector<ProcessParams *> processes_params);
 
     ~Kernel();
 
     /**
-     * @brief Starts the kernel. Creates the process parameters priority queue
-     * instantiates the scheduler and calls start_scheduler().
+     * @brief Starts the scheduler. For each second of the system running, 
+     * feeds the scheduler with the processes that are ready to enter 
+     * scheduling.
      */
-    void start(int scheduler_type,
-                std::vector<ProcessParams *> processes_params);
+    void start_scheduler(unsigned int scheduler_type);
 
 private:
     CPU cpu;
@@ -34,12 +37,18 @@ private:
     unsigned int current_time;
     unsigned int ran_pid; // pid of the process that ran in the last second.
 
+    struct CompareProcessParams {
+        bool operator()(const ProcessParams* lhs, const ProcessParams* rhs) const {
+            return lhs->get_creation_time() < rhs->get_creation_time();
+        }
+    };
+    std::vector<ProcessParams *> params_queue;
+
     /**
-     * @brief Starts the scheduler. For each second of the system running, 
-     * feeds the scheduler with the processes that are ready to enter 
-     * scheduling.
+     * @brief Destroys the current scheduler and resets scheduling related
+     * variables.
      */
-    void start_scheduler();
+    void reset_scheduler();
 
     /**
      * @brief Goes through the queue of process paramaters and creates the
@@ -49,17 +58,6 @@ private:
      */
     std::vector<Process> create_processes();
 
-
-    struct CompareProcessParams {
-        bool operator()(const ProcessParams* lhs, const ProcessParams* rhs) const {
-            return lhs->get_creation_time() >= rhs->get_creation_time();
-        }
-    };
-    /**
-     * @brief A priority queue of process parameters, ordered by creation time.
-     */
-    std::priority_queue<ProcessParams*, std::vector<ProcessParams*>,
-                        CompareProcessParams> params_queue;
 };
 
 enum SchedulerType {
@@ -111,39 +109,38 @@ public:
 
 #endif // KERNEL_H
 
+Kernel::Kernel() :
+    cpu(CPU()),
+    scheduler(nullptr),
+    process_counter(0),
+    current_time(0),
+    ran_pid(0) {}
 
-Kernel::Kernel() :  cpu(CPU()),
-                    scheduler(nullptr),
-                    process_counter(0),
-                    current_time(0),
-                    ran_pid(0) {}
+Kernel::Kernel(std::vector<ProcessParams *> processes_params) :
+    cpu(CPU()),
+    scheduler(nullptr),
+    process_counter(0),
+    current_time(0),
+    ran_pid(0),
+    params_queue(processes_params) {
+        std::sort(
+            params_queue.begin(),
+            params_queue.end(),
+            CompareProcessParams());
 
-Kernel::~Kernel() {
-    delete scheduler;
-}
+        for (auto it = params_queue.begin(); it != params_queue.end(); ++it)
+            std::cout << (*it)->get_creation_time() << std::endl;
+    }
 
-void Kernel::start(int scheduler_type,
-                    std::vector<ProcessParams *> processes_params) {
+Kernel::~Kernel() {}
 
-    // Creates a priority queue of processes params, ordered by creation time.
-    params_queue = std::priority_queue<ProcessParams*,
-                    std::vector<ProcessParams*>,
-                    CompareProcessParams>(  processes_params.begin(),
-                                            processes_params.end());
+void Kernel::start_scheduler(unsigned int scheduler_type) {
 
     // Initializes the scheduler according to the scheduler type.
     scheduler = SchedulerFactory().create_scheduler(scheduler_type);
-    start_scheduler();
-}
 
-void Kernel::start_scheduler() {
 
-    if (scheduler == nullptr)
-        return;
-
-    process_counter = 1;
-    ran_pid = 1;
-    bool running = ran_pid || !params_queue.empty();
+    bool running = process_counter < params_queue.size();
 
     // Simulates the system running for each second.
     while (running) {
@@ -160,19 +157,28 @@ void Kernel::start_scheduler() {
         if (ran_pid)
             cpu.process(ran_pid);
         // scheduler->printSchedule(current_time);
-        std::cout << "Time: " << current_time << " PID: " << ran_pid << std::endl;
         ++current_time;
-        running = ran_pid || !params_queue.empty();
+        running = ran_pid || (process_counter < params_queue.size());
+        std::cout << "Time: " << current_time << " PID: " << ran_pid << std::endl;
     }
+
+    reset_scheduler();
+}
+
+void Kernel::reset_scheduler() {
+    delete scheduler;
+    scheduler = nullptr;
+    process_counter = 0;
+    current_time = 0;
+    ran_pid = 0;
 }
 
 std::vector<Process> Kernel::create_processes() {
     std::vector<Process> processes;
-    while (!params_queue.empty() &&
-            params_queue.top()->get_creation_time() == current_time) {
-        ProcessParams* params = params_queue.top();
-        params_queue.pop();
-        processes.push_back(Process((process_counter),
+    while (process_counter < params_queue.size() &&
+            params_queue[process_counter]->get_creation_time() == current_time) {
+        ProcessParams* params = params_queue[process_counter];
+        processes.push_back(Process((process_counter+1),
                                     params->get_duration(),
                                     params->get_priority()));
         ++process_counter;
