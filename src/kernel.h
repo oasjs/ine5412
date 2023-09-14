@@ -195,14 +195,16 @@ void Kernel::reset_scheduler() {
 
 std::vector<Process*> Kernel::create_processes() {
     std::vector<Process*> new_processes;
-    while (process_counter < params_queue.size() &&
-            params_queue[process_counter]->get_creation_time() == current_time) {
+    while (
+        process_counter < params_queue.size() &&
+        params_queue[process_counter]->get_creation_time() == current_time) {
         ProcessParams* params = params_queue[process_counter];
         Process* new_p = new Process((process_counter+1),
                                  params->get_duration(),
                                  params->get_priority());
         kernel_processes_vector.push_back(new_p);
-        new_processes.push_back(new_p);
+        if (params->get_duration() > 0)
+            new_processes.push_back(new_p);
         ++process_counter;
     }
     return new_processes;
