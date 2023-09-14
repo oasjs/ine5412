@@ -22,7 +22,7 @@ public:
     /**
      * @brief Starts the system. It reads the file and starts the kernel.
      */
-    void start(unsigned int scheduler_type) {
+    void start(unsigned int scheduler_type, unsigned int quantum) {
 
         std::string scheduling_types[] = {"First Come First Served",
                                          "Shortest Job First",
@@ -31,13 +31,13 @@ public:
                                          "Round Robin"};
 
         if (scheduler_type) {
-            kernel.start_scheduler(scheduler_type);
+            kernel.start_scheduler(scheduler_type, quantum);
 
         } else {
             for (int i = 1; i <= 5; i++) {
                 std::cout << "Scheduler type: " << scheduling_types[i-1]
                                                 << std::endl << std::endl;
-                kernel.start_scheduler(i);
+                kernel.start_scheduler(i, quantum);
                 std::cout << std::endl;
             }
         }

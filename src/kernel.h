@@ -29,7 +29,7 @@ public:
      * feeds the scheduler with the processes that are ready to enter 
      * scheduling.
      */
-    void start_scheduler(unsigned int scheduler_type);
+    void start_scheduler(unsigned int scheduler_type, unsigned int quantum);
 
 private:
     CPU cpu;
@@ -136,10 +136,10 @@ Kernel::Kernel(std::vector<ProcessParams *> processes_params) :
 
 Kernel::~Kernel() {}
 
-void Kernel::start_scheduler(unsigned int scheduler_type) {
+void Kernel::start_scheduler(unsigned int scheduler_type, unsigned int quantum) {
 
     // Initializes the scheduler according to the scheduler type.
-    scheduler = SchedulerFactory().create_scheduler(scheduler_type);
+    scheduler = SchedulerFactory().create_scheduler(scheduler_type, quantum);
 
     number_of_processes = params_queue.size();
     bool running = process_counter < number_of_processes;
