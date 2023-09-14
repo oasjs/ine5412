@@ -14,6 +14,9 @@ public:
 
     ~Memory() {}
 
+    /**
+     * @brief Saves the context of a process.
+     */
     void save_context(int pid, Context context) {
         contextMap[pid] = context;
     }
