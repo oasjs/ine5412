@@ -22,10 +22,10 @@ int main(int argc, char** argv) {
         return 1;
     }
 
-    unsigned int number_of_processes = atoi(argv[1]);
-    unsigned int max_creation_time = atoi(argv[2]);
-    unsigned int max_duration = atoi(argv[3]);
-    unsigned int max_priority = atoi(argv[4]);
+    unsigned long number_of_processes = atoi(argv[1]);
+    unsigned long max_creation_time = atoi(argv[2]);
+    unsigned long max_duration = atoi(argv[3]);
+    unsigned long max_priority = atoi(argv[4]);
 
     std::ofstream file;
     file.open("input.txt");

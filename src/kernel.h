@@ -29,15 +29,15 @@ public:
      * feeds the scheduler with the processes that are ready to enter 
      * scheduling.
      */
-    void start_scheduler(unsigned int scheduler_type, unsigned int quantum);
+    void start_scheduler(unsigned long scheduler_type, unsigned long quantum);
 
 private:
     CPU cpu;
     Scheduler* scheduler;
-    unsigned int number_of_processes;
-    unsigned int process_counter;
-    unsigned int current_time;
-    unsigned int ran_pid; // pid of the process that ran in the last second.
+    unsigned long number_of_processes;
+    unsigned long process_counter;
+    unsigned long current_time;
+    unsigned long ran_pid; // pid of the process that ran in the last second.
     std::vector<Process*> kernel_processes_vector;
 
     struct CompareProcessParams {
@@ -70,7 +70,7 @@ private:
      * @brief Prints the time stamp, followed by the state mneumonic for each
      * process of the process timeline.
      */
-    void print_schedule(unsigned int current_time);
+    void print_schedule(unsigned long current_time);
 
 };
 
@@ -95,8 +95,8 @@ public:
      * scheduler. Defaults to 2.
      * @return A pointer to the created scheduler.
      */
-    Scheduler* create_scheduler(unsigned int scheduler_type,
-                                unsigned int quantum = 2) {
+    Scheduler* create_scheduler(unsigned long scheduler_type,
+                                unsigned long quantum = 2) {
         switch (scheduler_type)
         {
         case FCFS:
@@ -145,7 +145,7 @@ Kernel::Kernel(std::vector<ProcessParams *> processes_params) :
 
 Kernel::~Kernel() {}
 
-void Kernel::start_scheduler(unsigned int scheduler_type, unsigned int quantum) {
+void Kernel::start_scheduler(unsigned long scheduler_type, unsigned long quantum) {
 
     // Initializes the scheduler according to the scheduler type.
     scheduler = SchedulerFactory().create_scheduler(scheduler_type, quantum);
@@ -220,7 +220,7 @@ void Kernel::setup_print() {
     std::cout << std::endl;
 }
 
-void Kernel::print_schedule(unsigned int current_time) {
+void Kernel::print_schedule(unsigned long current_time) {
     std::cout << std::setw(5) << std::right << current_time << "-" << std::setw(5) << std::left << (current_time + 1);
 
     for (std::size_t i = 1; i <= number_of_processes; i++) {

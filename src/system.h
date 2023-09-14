@@ -22,7 +22,7 @@ public:
     /**
      * @brief Starts the system. It reads the file and starts the kernel.
      */
-    void start(unsigned int scheduler_type, unsigned int quantum) {
+    void start(unsigned long scheduler_type, unsigned long quantum) {
 
         std::string scheduling_types[] = {"First Come First Served",
                                          "Shortest Job First",

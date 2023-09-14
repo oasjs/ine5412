@@ -23,7 +23,7 @@ public:
         state = 0;
     }
 
-    Process(unsigned int pid_, unsigned int duration_, unsigned int priority_) {
+    Process(unsigned long pid_, unsigned long duration_, unsigned long priority_) {
         pid = pid_;
         duration = duration_;
         priority = priority_;
@@ -54,7 +54,7 @@ public:
      * @param s The state of the process, being 1 for READY, 2 for RUNNING and
      * 3 for DONE.
      */
-    void set_state(unsigned int s) {
+    void set_state(unsigned long s) {
         if (s == READY || s == RUNNING || s == DONE) {
             state = s;
         }
@@ -85,35 +85,35 @@ public:
     /**
      * @brief Returns the process ID.
      */
-    unsigned int get_pid() const {
+    unsigned long get_pid() const {
         return pid;}
 
     /**
      * @brief Returns the maximum duration of the process. If the duration is
      *  0, the process is invalid.
      */
-    unsigned int get_duration() const {
+    unsigned long get_duration() const {
         return duration;}
 
     /**
      * @brief Returns the priority of the process. This priority is always
      * static.
      */
-    unsigned int get_priority() const {
+    unsigned long get_priority() const {
         return priority;}
 
     /**
      * @brief Returns the total execution time of the process.
      */
-    unsigned int get_total_execution_time() const {
+    unsigned long get_total_execution_time() const {
         return total_execution_time;}
 
 protected:
-    unsigned int    pid;
-    unsigned int    duration;
-    unsigned int    priority;
-    unsigned int    total_execution_time;
-    unsigned int    state;
+    unsigned long    pid;
+    unsigned long    duration;
+    unsigned long    priority;
+    unsigned long    total_execution_time;
+    unsigned long    state;
 };
 
 #endif // PROCESS_H

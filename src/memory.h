@@ -17,7 +17,7 @@ public:
     /**
      * @brief Saves the context of a process.
      */
-    void save_context(int pid, Context context) {
+    void save_context(unsigned long pid, Context context) {
         contextMap[pid] = context;
     }
 
@@ -25,7 +25,7 @@ public:
      * @brief Loads the context of a process. If the process has no context
      * saved, returns an empty context.
      */
-    Context load_context(int pid) {
+    Context load_context(unsigned long pid) {
         if (contextMap.find(pid) != contextMap.end())
             return contextMap[pid];
         else

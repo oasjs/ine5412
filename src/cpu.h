@@ -15,7 +15,7 @@
 class CPU {
 public:
     CPU() {
-        registers = std::vector<unsigned int>(6);
+        registers = std::vector<unsigned long>(6);
         sp = 0;
         pc = 0;
         st = 0;
@@ -28,7 +28,7 @@ public:
      * continue to run. Otherwise, it will load the context of the process.
      * @param pid The id of the current process.
      */
-    void process(unsigned int pid) {
+    void process(unsigned long pid) {
 
         // If the process is new to the processor, try to load its context.
         if (pid != registers[0]) {
@@ -71,7 +71,8 @@ public:
      * @param preempted_pid The id of the preempted process.
      * @param scheduled_pid The id of the scheduled process.
      */
-    void handle_preemption(int preempted_pid, int scheduled_pid) {
+    void handle_preemption(unsigned long preempted_pid,
+                            unsigned long scheduled_pid) {
 
         #ifdef DEBUG
         std::cout   << "** A preemption has occured!" << std::endl;
@@ -114,13 +115,13 @@ public:
 
 private:
     Memory memory;
-    std::vector<unsigned int> registers;
-    unsigned int sp; // Stack Pointer
-    unsigned int pc; // Program Counter
-    unsigned int st; // Status
+    std::vector<unsigned long> registers;
+    unsigned long sp; // Stack Pointer
+    unsigned long pc; // Program Counter
+    unsigned long st; // Status
 
     // Loads the context of a process from memory.
-    void load_context(int pid) {
+    void load_context(unsigned long pid) {
         Context context = memory.load_context(pid);
         registers = context.get_registers();
         sp = context.get_sp();
@@ -129,7 +130,7 @@ private:
     }
 
     // Saves the context of the current process in memory.
-    void save_context(int pid) {
+    void save_context(unsigned long pid) {
         Context context(registers, sp, pc, st);
         memory.save_context(pid, context);
     }

@@ -32,7 +32,7 @@ public:
      *
      * @return The pid of the process that was executed.
      */
-    unsigned int run() {
+    unsigned long run() {
         if (process_queue->empty() && current_process->is_done()) {
             return 0;
         }
@@ -63,7 +63,7 @@ public:
      *
      * @return The pid of the current process.
      */
-    unsigned int get_current_pid() {
+    unsigned long get_current_pid() {
         return current_process->get_pid();
     }
 
@@ -207,10 +207,10 @@ public:
  */
 class RRNPScheduler : public Scheduler {
 private:
-    unsigned int quantum;
+    unsigned long quantum;
 
 public:
-    RRNPScheduler(unsigned int q) : Scheduler(), quantum(q) {
+    RRNPScheduler(unsigned long q) : Scheduler(), quantum(q) {
         process_queue = new ProcessQueue();}
 
     ~RRNPScheduler() {
