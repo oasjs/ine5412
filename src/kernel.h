@@ -61,6 +61,15 @@ private:
      */
     std::vector<Process*> create_processes();
 
+    /**
+     * @brief Prints the scheduling timeline header.
+     */
+    void setup_print();
+
+    /**
+     * @brief Prints the time stamp, followed by the state mneumonic for each
+     * process of the process timeline.
+     */
     void print_schedule(unsigned int current_time);
 
 };
@@ -144,6 +153,9 @@ void Kernel::start_scheduler(unsigned int scheduler_type, unsigned int quantum) 
     number_of_processes = params_queue.size();
     bool running = process_counter < number_of_processes;
 
+    if (running)
+        setup_print();
+
     // Simulates the system running for each second.
     while (running) {
 
@@ -196,17 +208,17 @@ std::vector<Process*> Kernel::create_processes() {
     return new_processes;
 }
 
-void Kernel::print_schedule(unsigned int current_time) {
-    if (current_time == 0) {
-        std::cout << std::setw(3) << std::right << "" << "tempo"
-                << std::setw(3) << std::left << "";
-        for (std::size_t i = 1; i <= number_of_processes; i++) {
-            std::string process_code = "P" + std::to_string(i);
-            std::cout << std::setw(4) << std::right << process_code;
-        }
-        std::cout << std::endl;
+void Kernel::setup_print() {
+    std::cout << std::setw(3) << std::right << "" << "tempo"
+            << std::setw(3) << std::left << "";
+    for (std::size_t i = 1; i <= number_of_processes; i++) {
+        std::string process_code = "P" + std::to_string(i);
+        std::cout << std::setw(4) << std::right << process_code;
     }
+    std::cout << std::endl;
+}
 
+void Kernel::print_schedule(unsigned int current_time) {
     std::cout << std::setw(5) << std::right << current_time << "-" << std::setw(5) << std::left << (current_time + 1);
 
     for (std::size_t i = 1; i <= number_of_processes; i++) {
