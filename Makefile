@@ -22,10 +22,10 @@ fcfs-run:
 stf-run:
 	./$(TARGET) $(INPUT) 2
 
-pp-run:
+pnp-run:
 	./$(TARGET) $(INPUT) 3
 
-pnp-run:
+pwp-run:
 	./$(TARGET) $(INPUT) 4
 
 rr-run:
