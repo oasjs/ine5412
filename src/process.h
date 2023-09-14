@@ -34,23 +34,36 @@ public:
     ~Process() {}
 
     /**
-     * @brief Increments the total execution time of the process and returns
-     *  true if the process has finished its execution. Otherwise returns false.
+     * @brief Increments the total execution time of the process.
     */
     void run() {
         total_execution_time++;
     }
 
+    /**
+     * @return True if the process has finished its execution. Otherwise
+     * returns false.
+     */
     bool is_done() {
         return total_execution_time >= duration;
     }
 
+    /**
+     * @brief Sets the state of the process.
+     * 
+     * @param s The state of the process, being 1 for READY, 2 for RUNNING and
+     * 3 for DONE.
+     */
     void set_state(unsigned int s) {
         if (s == READY || s == RUNNING || s == DONE) {
             // std::cout << "Set State PID: " << pid << " State: " << state << std::endl;
             state = s;
         }
-    } 
+    }
+
+    /**
+     * @return The state mneumonic of the process.
+     */
     std::string get_state() {
         switch (state)
         {

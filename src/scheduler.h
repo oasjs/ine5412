@@ -58,10 +58,22 @@ public:
         }
     }
 
+    /**
+     * @brief Returns the pid of the current process.
+     *
+     * @return The pid of the current process.
+     */
     unsigned int get_current_pid() {
         return current_process->get_pid();
     }
 
+    /**
+     * @brief Implements preemption according to the scheduler type.
+     * Attributes the current process as the preempting process and inserts
+     * the preempted process back in queue.
+     *
+     * @return True if the scheduler has preemption. False otherwise.
+     */
     virtual bool has_preemption() = 0;
 
 protected:
