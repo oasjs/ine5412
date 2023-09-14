@@ -56,7 +56,6 @@ public:
      */
     void set_state(unsigned int s) {
         if (s == READY || s == RUNNING || s == DONE) {
-            // std::cout << "Set State PID: " << pid << " State: " << state << std::endl;
             state = s;
         }
     }

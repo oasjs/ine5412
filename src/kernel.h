@@ -29,7 +29,7 @@ public:
      * feeds the scheduler with the processes that are ready to enter 
      * scheduling.
      */
-    void start_scheduler(unsigned int scheduler_type);
+    void start_scheduler(unsigned int scheduler_type, unsigned int quantum);
 
 private:
     CPU cpu;
@@ -61,6 +61,15 @@ private:
      */
     std::vector<Process*> create_processes();
 
+    /**
+     * @brief Prints the scheduling timeline header.
+     */
+    void setup_print();
+
+    /**
+     * @brief Prints the time stamp, followed by the state mneumonic for each
+     * process of the process timeline.
+     */
     void print_schedule(unsigned int current_time);
 
 };
@@ -136,13 +145,16 @@ Kernel::Kernel(std::vector<ProcessParams *> processes_params) :
 
 Kernel::~Kernel() {}
 
-void Kernel::start_scheduler(unsigned int scheduler_type) {
+void Kernel::start_scheduler(unsigned int scheduler_type, unsigned int quantum) {
 
     // Initializes the scheduler according to the scheduler type.
-    scheduler = SchedulerFactory().create_scheduler(scheduler_type);
+    scheduler = SchedulerFactory().create_scheduler(scheduler_type, quantum);
 
     number_of_processes = params_queue.size();
     bool running = process_counter < number_of_processes;
+
+    if (running)
+        setup_print();
 
     // Simulates the system running for each second.
     while (running) {
@@ -183,30 +195,32 @@ void Kernel::reset_scheduler() {
 
 std::vector<Process*> Kernel::create_processes() {
     std::vector<Process*> new_processes;
-    while (process_counter < params_queue.size() &&
-            params_queue[process_counter]->get_creation_time() == current_time) {
+    while (
+        process_counter < params_queue.size() &&
+        params_queue[process_counter]->get_creation_time() == current_time) {
         ProcessParams* params = params_queue[process_counter];
         Process* new_p = new Process((process_counter+1),
                                  params->get_duration(),
                                  params->get_priority());
         kernel_processes_vector.push_back(new_p);
-        new_processes.push_back(new_p);
+        if (params->get_duration() > 0)
+            new_processes.push_back(new_p);
         ++process_counter;
     }
     return new_processes;
 }
 
-void Kernel::print_schedule(unsigned int current_time) {
-    if (current_time == 0) {
-        std::cout << std::setw(3) << std::right << "" << "tempo"
-                << std::setw(3) << std::left << "";
-        for (std::size_t i = 1; i <= number_of_processes; i++) {
-            std::string process_code = "P" + std::to_string(i);
-            std::cout << std::setw(4) << std::right << process_code;
-        }
-        std::cout << std::endl;
+void Kernel::setup_print() {
+    std::cout << std::setw(3) << std::right << "" << "tempo"
+            << std::setw(3) << std::left << "";
+    for (std::size_t i = 1; i <= number_of_processes; i++) {
+        std::string process_code = "P" + std::to_string(i);
+        std::cout << std::setw(4) << std::right << process_code;
     }
+    std::cout << std::endl;
+}
 
+void Kernel::print_schedule(unsigned int current_time) {
     std::cout << std::setw(5) << std::right << current_time << "-" << std::setw(5) << std::left << (current_time + 1);
 
     for (std::size_t i = 1; i <= number_of_processes; i++) {

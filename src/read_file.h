@@ -58,7 +58,7 @@ public:
 		}
 		
 		while (myfile >> a >> b >> c) {
-			ProcessParams *p = new ProcessParams(a, b, c);
+			ProcessParams *p = new ProcessParams(abs(a), abs(b), abs(c));
 			processes.push_back(p);
 		}
 
