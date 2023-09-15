@@ -32,16 +32,17 @@ public:
      *
      * @return The pid of the process that was executed.
      */
-    unsigned long run() {
+    unsigned long run(unsigned long current_time) {
         if (process_queue->empty() && current_process->is_done()) {
+            current_process->set_state(DONE, current_time);
             return 0;
         }
         if (current_process->is_done()) {
-            current_process->set_state(DONE);
+            current_process->set_state(DONE, current_time);
             current_process = process_queue->front();
             process_queue->pop();
         }
-        current_process->set_state(RUNNING);
+        current_process->set_state(RUNNING, current_time);
         current_process->run();
         return current_process->get_pid();
     }
@@ -51,9 +52,9 @@ public:
      *
      * @param new_processes The new processes to be fed.
      */
-    void feed(std::vector<Process*> new_processes) {
+    void feed(std::vector<Process*> new_processes, unsigned long current_time) {
         for (auto process : new_processes) {
-            process->set_state(READY);
+            process->set_state(READY, current_time);
             process_queue->push(process);
         }
     }
@@ -74,7 +75,7 @@ public:
      *
      * @return True if the scheduler has preemption. False otherwise.
      */
-    virtual bool has_preemption() = 0;
+    virtual bool has_preemption(unsigned long current_time) = 0;
 
 protected:
     Process* init_process;
@@ -102,7 +103,7 @@ public:
         delete process_queue;
     }
 
-    bool has_preemption() {
+    bool has_preemption(unsigned long current_time) {
         return false;}
 
 };
@@ -133,7 +134,7 @@ public:
         delete init_process;
     }
 
-    bool has_preemption() {
+    bool has_preemption(unsigned long current_time) {
         return false; }
 
 };
@@ -165,7 +166,7 @@ public:
         delete init_process;
     }
 
-    bool has_preemption() {
+    bool has_preemption(unsigned long current_time) {
         return false; }
 
 };
@@ -179,13 +180,13 @@ public:
  */
 class PPScheduler : public PNPScheduler {
 public:
-    bool has_preemption() {
+    bool has_preemption(unsigned long current_time) {
         if (!current_process->is_done() && !process_queue->empty()) {
             if (current_process->get_priority() <
                 process_queue->front()->get_priority()
                 ) {
                 process_queue->push(current_process);
-                current_process->set_state(READY);
+                current_process->set_state(READY, current_time);
                 current_process = process_queue->front();
                 process_queue->pop();
                 return true;
@@ -218,11 +219,11 @@ public:
         delete process_queue;
     }
 
-    bool has_preemption() {
+    bool has_preemption(unsigned long current_time) {
         if (!current_process->is_done() && !process_queue->empty()) {
             if (current_process->get_total_execution_time() % quantum == 0) {
                 process_queue->push(current_process);
-                current_process->set_state(READY);
+                current_process->set_state(READY, current_time);
                 current_process = process_queue->front();
                 process_queue->pop();
                 return true;
