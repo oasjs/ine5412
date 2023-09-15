@@ -37,6 +37,7 @@ public:
     unsigned long run(unsigned long current_time) {
         if (process_queue->empty() && current_process->is_done()) {
             current_process->set_state(DONE, current_time);
+            current_process = init_process;
             return 0;
         }
         if (current_process->is_done()) {
