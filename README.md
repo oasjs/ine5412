@@ -5,6 +5,40 @@
 ## Objetivo
 O presente trabalho tem por objetivo escrever um programa para simular o escalonamento e abstração de um conjunto de processos/threads através do uso de algoritmos de escalonamento de processos conhecidos na literatura. 
 
+---
+## Execução padrão
+Estando na raiz do repositório e com o compilador `g++` instalado, rodar o seguinte comando
+```make all```
+
+---
+## Execução passo a passo
+
+### Gerar entrada
+Para gerar uma entrada aleatória utilize os seguintes comandos (Estando na raiz do repositório)
+
+```make build-input-generator```
+
+```make run-input-generator ARGS="<number_of_processes> <max_creation_time> <max_duration> <max_priority>"```
+
+### Gerar arquivo executável
+Para gerar o arquivo executável utilize o seguinte comando (Estando na raiz do repositório)
+
+```make build```
+
+### Executar o escalonador
+Para executar o escalonador utilize o seguinte comando (Estando na raiz do repositório)
+
+```make run-<type>```
+
+Onde `<type>` pode ser as seguintes opções:
+- `default` (Estabelecido o escolonador First Come First Serve)
+- `fcfs` (First Come First Serve)
+- `sjf` (Shortest Job First)
+- `pnp` (Por prioridade, sem preempção)
+- `pwp` (Por prioridade, com preempção por prioridade)
+- `rr` (Round-Robin com quantum = 2s, sem prioridade)
+
+---
 ## Requisitos
 
 O programa deve suportar os seguintes algoritmos de escalonamento de processos:
