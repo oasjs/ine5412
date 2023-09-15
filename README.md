@@ -2,8 +2,8 @@
 
 ![Badge em Desenvolvimento](http://img.shields.io/static/v1?label=STATUS&message=EM%20DESENVOLVIMENTO&color=GREEN&style=for-the-badge)
 
-**Disciplina:** INE5412 – Sistemas Operacionais I
-**Professores:** Giovani Gracioli e Márcio Bastos Castro
+**Disciplina:** INE5412 – Sistemas Operacionais I <br>
+**Professores:** Giovani Gracioli e Márcio Bastos Castro <br>
 **Alunos:** João Pedro Schmidt Cordeiro e Otávio Augusto de Santana Jatobá
 ## Objetivo
 O presente trabalho tem por objetivo escrever um programa para simular o escalonamento e abstração de um conjunto de processos/threads através do uso de algoritmos de escalonamento de processos conhecidos na literatura. 
