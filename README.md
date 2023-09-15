@@ -39,6 +39,14 @@ Onde `<type>` pode ser as seguintes opções:
 - `rr` (Round-Robin com quantum = 2s, sem prioridade)
 
 ---
+## Execução personalizada
+Caso você possua seu próprio arquivo de entrada, basta inserir-lo na pasta `inputs` (Caso a pasta não exista, você terá que criar). 
+
+Também é necessário que esteja com o nome padrão indicado em seguida:  `./inputs/input.txt` 
+
+Em seguida é necessário reproduzir os passos "Gerar arquivo executável" e "Executar o escalonador" referênciados na etapa anterior.
+
+---
 ## Requisitos
 
 O programa deve suportar os seguintes algoritmos de escalonamento de processos:
