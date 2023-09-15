@@ -7,7 +7,7 @@ O presente trabalho tem por objetivo escrever um programa para simular o escalon
 
 ---
 ## Execução padrão
-Estando na raiz do repositório e com o compilador `g++` instalado, rodar o seguinte comando
+Estando na raiz do repositório, com comandos `make` e compilador `g++` instalados, rodar o seguinte comando
 ```make all```
 
 ---
