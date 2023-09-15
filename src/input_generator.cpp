@@ -35,7 +35,7 @@ int main(int argc, char** argv) {
     file    << rand() % max_creation_time << " "
             << rand() % max_duration +1 << " "
             << rand() % max_priority;
-    for (int i = 1; i < number_of_processes; i++) {
+    for (unsigned long i = 1; i < number_of_processes; i++) {
         file    << std::endl
                 << rand() % max_creation_time << " "
                 << rand() % max_duration + 1 << " "
