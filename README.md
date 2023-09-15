@@ -1,14 +1,27 @@
-# Simulação de Algoritmos de Escalonamento
+<h1 align="center">Simulação de Algoritmos de Escalonamento</h1>
+![Badge em Desenvolvimento](http://img.shields.io/static/v1?label=STATUS&message=EM%20DESENVOLVIMENTO&color=GREEN&style=for-the-badge)
+![GitHub Org's stars](https://img.shields.io/github/stars/camilafernanda?style=social)
+
+
 **Disciplina:** INE5412 – Sistemas Operacionais I
+
 **Professores:** Giovani Gracioli e Márcio Bastos Castro
+
 **Alunos:** João Pedro Schmidt Cordeiro e Otávio Augusto de Santana Jatobá
 ## Objetivo
 O presente trabalho tem por objetivo escrever um programa para simular o escalonamento e abstração de um conjunto de processos/threads através do uso de algoritmos de escalonamento de processos conhecidos na literatura. 
 
+## Pré-requisitos
+Antes de utilizar este programa, certifique-se de que os seguintes pré-requisitos estão instalados no seu sistema:
+
+- **Compilador C++ (g++):** Você precisa ter o compilador C++ (g++) instalado no seu sistema para compilar o código-fonte do programa.
+
+- **GNU Make:** É necessário ter a ferramenta GNU Make instalada para usar o arquivo Makefile e compilar o programa de forma eficiente.
+
 ---
 ## Execução padrão
-Estando na raiz do repositório, com comandos `make` e compilador `g++` instalados, rodar o seguinte comando
-```make all```
+Estando na raiz do repositório, rodar o seguinte comando
+```make all-default```
 
 ---
 ## Execução passo a passo
@@ -45,6 +58,11 @@ Caso você possua seu próprio arquivo de entrada, basta inserir-lo na pasta `in
 Também é necessário que esteja com o nome padrão indicado em seguida:  `./inputs/input.txt` 
 
 Em seguida é necessário reproduzir os passos "Gerar arquivo executável" e "Executar o escalonador" referênciados na etapa anterior.
+
+## Execução com depuração
+Caso você queira depurar o código, basta, durante a etapa "gerar arquivo executável", alterar o comando para:
+
+`make debug-build`
 
 ---
 ## Requisitos
