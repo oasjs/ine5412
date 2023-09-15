@@ -1,5 +1,7 @@
 #ifndef SCHEDULER_H
 #define SCHEDULER_H
+#define UNUSED(x) (void)(x)
+
 
 #include <queue>
 #include <iostream>
@@ -104,6 +106,7 @@ public:
     }
 
     bool has_preemption(unsigned long current_time) {
+        UNUSED(current_time);
         return false;}
 
 };
@@ -135,6 +138,7 @@ public:
     }
 
     bool has_preemption(unsigned long current_time) {
+        UNUSED(current_time);
         return false; }
 
 };
@@ -167,6 +171,7 @@ public:
     }
 
     bool has_preemption(unsigned long current_time) {
+        UNUSED(current_time);
         return false; }
 
 };
