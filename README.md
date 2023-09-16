@@ -48,6 +48,10 @@ Onde `<type>` pode ser as seguintes opções:
 - `pwp` (Por prioridade, com preempção por prioridade)
 - `rr` (Round-Robin com quantum = 2s, sem prioridade)
 
+**Nota:** Para o algoritmo RR, você pode especificar um quantum adicionando um argumento adicional ao comando, como por exemplo: 
+
+`make run-rr QUANTUM=5`
+
 ---
 ## Execução personalizada
 Caso você possua seu próprio arquivo de entrada, basta inserir-lo na pasta `inputs` (Caso a pasta não exista, você terá que criar). 
