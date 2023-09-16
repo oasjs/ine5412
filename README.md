@@ -41,7 +41,7 @@ Para executar o escalonador utilize o seguinte comando (Estando na raiz do repos
 ```make run-<type>```
 
 Onde `<type>` pode ser as seguintes opções:
-- `default` (Estabelecido o escolonador First Come First Serve)
+- `default` (Todos os escalonadores)
 - `fcfs` (First Come First Serve)
 - `sjf` (Shortest Job First)
 - `pnp` (Por prioridade, sem preempção)
